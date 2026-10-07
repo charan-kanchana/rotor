@@ -1,7 +1,7 @@
 {
   "version": 1,
   "updated": "2026-09-13",
-  "note": "Curated provider catalog shipped with the plugin. A remote catalog (same schema, served from a raw GitHub URL) can be added in Settings and overrides entries with matching ids. Model IDs change often — always verify against the provider's docs. Sign-up links support switchXprovider development.",
+  "note": "Curated provider catalog shipped with the plugin. A remote catalog (same schema, served from a raw GitHub URL) can be added in Settings and overrides entries with matching ids. Model IDs change often — always verify against the provider's docs. Sign-up links support rotor development.",
   "providers": [
     {
       "id": "agentrouter",

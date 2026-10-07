@@ -110,14 +110,14 @@ function mergedCatalog() {
 }
 
 const OFFICIAL_CATALOG_URL =
-  'https://raw.githubusercontent.com/shaheer-00/switchXprovider/master/server/catalog.json';
+  'https://github.com/charan-kanchana/rotor/blob/main/server/catalog.json';
 
 async function refreshRemoteCatalog(cfg, url) {
   const ac = new AbortController();
   const timer = setTimeout(() => ac.abort(), 15_000);
   try {
     const resp = await fetch(url, {
-      headers: { 'user-agent': 'switchxprovider-catalog/1' },
+      headers: { 'user-agent': 'rotor-catalog/1' },
       signal: ac.signal,
     });
     if (!resp.ok) throw new Error(`catalog URL returned ${resp.status}`);
@@ -152,7 +152,7 @@ function sanitizeProviderInput(body) {
   if (!name) errors.push('name is required');
   if (!/^https?:\/\//.test(baseUrl)) errors.push('baseUrl must start with http:// or https://');
   const models = {};
-  for (const slot of ['opus', 'sonnet', 'haiku']) {
+  for (const slot of ['opus', 'fable', 'sonnet', 'haiku']) {
     const v = String(body.models?.[slot] || '').trim();
     if (v) models[slot] = v;
   }
@@ -344,20 +344,20 @@ export async function handleApi(req, res, pathname, cfg) {
         if (!p) return send(res, 404, { error: 'provider not found' });
 
         if (action === 'test') {
-          const { ok, missing } = await deepCheck(p);
+          const { ok, missing, error } = await deepCheck(p);
           const s = statsFor(cfg, p.id);
           if (ok && s.deadUntil) {
             s.deadUntil = 0;
             s.deadReason = null;
             logEvent(cfg, `Provider "${p.name}" passed manual test — back in rotation`);
           } else if (!ok) {
-            logEvent(cfg, `Provider "${p.name}" failed manual test`);
+            logEvent(cfg, `Provider "${p.name}" failed manual test${error ? ': ' + error : ''}`);
           }
-          if (missing.length) {
+          if (missing?.length) {
             logEvent(cfg, `Provider "${p.name}" missing model IDs: ${missing.join(', ')}`);
           }
           persistSoon(cfg, 0);
-          return send(res, 200, { ok, missing });
+          return send(res, 200, { ok, missing, error });
         }
 
         if (action === 'reset') {

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// switchXprovider — the proxy server.
+// rotor — the proxy server.
 //
 // Routes:
 //   /            web dashboard
@@ -19,7 +19,6 @@ import { startHealthLoop, warmActive } from './lib/health.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const INDEX_PATH = path.join(__dirname, '..', 'public', 'index.html');
-const CHAT_PATH = path.join(__dirname, '..', 'public', 'chat.html');
 
 // The proxy is bound to 127.0.0.1 and holds provider API keys in memory, so
 // requests must actually come from this machine. A page at attacker.test can
@@ -46,7 +45,7 @@ function originAllowed(origin, port) {
 }
 function forbidden(res, why) {
   res.writeHead(403, { 'content-type': 'application/json' });
-  res.end(JSON.stringify({ error: `switchXprovider: request rejected (${why}). This proxy only accepts requests addressed to 127.0.0.1:${PORT}.` }));
+  res.end(JSON.stringify({ error: `rotor: request rejected (${why}). This proxy only accepts requests addressed to 127.0.0.1:${PORT}.` }));
 }
 
 const cfg = load();
@@ -101,7 +100,7 @@ function serveFile(res, filePath) {
     res.end(html);
   } catch {
     res.writeHead(500, { 'content-type': 'text/plain' });
-    res.end('switchXprovider: file missing: ' + filePath);
+    res.end('rotor: file missing: ' + filePath);
   }
 }
 
@@ -181,10 +180,6 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
-    if (pathname === '/chat' || pathname === '/chat.html') {
-      serveFile(res, CHAT_PATH);
-      return;
-    }
 
     if (pathname.startsWith('/api/')) {
       await handleApi(req, res, pathname, cfg);
@@ -199,17 +194,17 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(500, { 'content-type': 'application/json' });
     }
     try {
-      res.end(JSON.stringify({ type: 'error', error: { type: 'api_error', message: `switchXprovider: ${err.message}` } }));
+      res.end(JSON.stringify({ type: 'error', error: { type: 'api_error', message: `rotor: ${err.message}` } }));
     } catch {
       /* connection already gone */
     }
-    console.error(`[switchx] ${req.method} ${pathname} failed:`, err.message);
+    console.error(`[rotor] ${req.method} ${pathname} failed:`, err.message);
   }
 });
 
 // 127.0.0.1 only — API keys live in this process; never expose on the network.
 server.listen(PORT, '127.0.0.1', () => {
-  console.log(`switchXprovider proxy listening on http://127.0.0.1:${PORT}`);
+  console.log(`rotor proxy listening on http://127.0.0.1:${PORT}`);
   console.log(`config: ${CONFIG_PATH}`);
 });
 
@@ -223,7 +218,7 @@ const idleTimer = setInterval(() => {
     emptySince = Date.now();
   }
   if (Date.now() - emptySince >= IDLE_TIMEOUT_MS && Date.now() - lastActivity >= IDLE_TIMEOUT_MS) {
-    console.log('[switchx] No active sessions for 15 minutes — shutting down');
+    console.log('[rotor] No active sessions for 15 minutes — shutting down');
     process.exit(0);
   }
 }, 30_000);
@@ -234,7 +229,7 @@ startHealthLoop(() => cfg);
 warmActive(cfg);
 
 process.on('SIGINT', () => {
-  console.log('switchXprovider shutting down');
+  console.log('rotor shutting down');
   process.exit(0);
 });
 process.on('uncaughtException', (err) => {

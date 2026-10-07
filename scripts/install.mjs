@@ -35,8 +35,22 @@ async function ensureRunning() {
   return await isUp();
 }
 
+// Upsert a hook entry into a SessionStart/SessionEnd array without touching
+// any other existing hooks the user may have installed (MCP hooks, other tools, etc.)
+function upsertHook(hookArray, matchCommand, newCommand, extraGroupProps = {}) {
+  const existingGroup = hookArray.find((g) =>
+    g?.hooks?.some((h) => typeof h?.command === 'string' && h.command.includes(matchCommand))
+  );
+  if (existingGroup) {
+    const existingHook = existingGroup.hooks.find((h) => h?.command?.includes(matchCommand));
+    if (existingHook) existingHook.command = newCommand;
+  } else {
+    hookArray.push({ ...extraGroupProps, hooks: [{ type: 'command', command: newCommand }] });
+  }
+}
+
 async function main() {
-  console.log('switchXprovider — Claude Code Setup\n');
+  console.log('rotor — Claude Code Setup\n');
 
   if (!(await ensureRunning())) {
     console.error(`ERROR: Proxy could not be started at ${BASE}.`);
@@ -60,11 +74,11 @@ async function main() {
     console.error('Why this matters:');
     console.error('Claude Code routes all traffic through this proxy once configured.');
     console.error('Without a working provider, Claude Code would have no API access.\n');
-    console.error(`Please do this first:`);
+    console.error('Please do this first:');
     console.error(`  1. Open http://127.0.0.1:${port} in your browser`);
-    console.error(`  2. Add your provider and API key (or pick from the catalog)`);
-    console.error(`  3. Click "Test" to verify it`);
-    console.error(`  4. Re-run: npm run setup\n`);
+    console.error('  2. Add your provider and API key (or pick from the catalog)');
+    console.error('  3. Click "Test" to verify it');
+    console.error('  4. Re-run: npm run setup\n');
     process.exit(1);
   }
 
@@ -72,10 +86,11 @@ async function main() {
 
   const settingsDir = path.join(os.homedir(), '.claude');
   const settingsPath = path.join(settingsDir, 'settings.json');
-  const backupPath = path.join(settingsDir, 'settings.json.switchx-backup');
+  const backupPath = path.join(settingsDir, 'settings.json.rotor-backup');
 
   fs.mkdirSync(settingsDir, { recursive: true });
 
+  // Load existing settings so we don't disturb any hooks/config the user already has.
   let settings = {};
   if (fs.existsSync(settingsPath)) {
     try {
@@ -83,73 +98,47 @@ async function main() {
     } catch {
       settings = {};
     }
+    // Back up only once so the original pre-rotor state is always recoverable.
     if (!fs.existsSync(backupPath)) {
       fs.copyFileSync(settingsPath, backupPath);
       console.log(`✓ Saved backup of original settings to: ${backupPath}`);
     }
   }
 
-  // Set environment variables for Claude Code
+  // Merge only rotor-owned env keys; leave every other env var the user has untouched.
   settings.env = settings.env || {};
   settings.env.ANTHROPIC_BASE_URL = `http://127.0.0.1:${port}`;
-  settings.env.ANTHROPIC_AUTH_TOKEN = 'switchx-local';
-  settings.env.ANTHROPIC_DEFAULT_OPUS_MODEL = 'switchx:opus';
-  settings.env.ANTHROPIC_DEFAULT_SONNET_MODEL = 'switchx:sonnet';
-  settings.env.ANTHROPIC_DEFAULT_HAIKU_MODEL = 'switchx:haiku';
+  settings.env.ANTHROPIC_AUTH_TOKEN = 'rotor-local';
+  settings.env.ANTHROPIC_DEFAULT_OPUS_MODEL = 'rotor:opus';
+  settings.env.ANTHROPIC_DEFAULT_FABLE_MODEL = 'rotor:fable';
+  settings.env.ANTHROPIC_DEFAULT_SONNET_MODEL = 'rotor:sonnet';
+  settings.env.ANTHROPIC_DEFAULT_HAIKU_MODEL = 'rotor:haiku';
 
-  // Configure SessionStart hook to auto-start proxy
+  // Hooks: ensure the rotor entry exists without removing or modifying any
+  // other hooks the user has set up (e.g. MCP hooks, other tool hooks).
   settings.hooks = settings.hooks || {};
   settings.hooks.SessionStart = Array.isArray(settings.hooks.SessionStart)
-    ? settings.hooks.SessionStart
-    : [];
-
-  const hookCommand = `node "${ENSURE_PATH}"`;
-  const existingGroup = settings.hooks.SessionStart.find((g) =>
-    g?.hooks?.some((h) => h?.command?.includes('ensure.mjs'))
-  );
-
-  if (existingGroup) {
-    const existingHook = existingGroup.hooks.find((h) => h?.command?.includes('ensure.mjs'));
-    existingHook.command = hookCommand;
-  } else {
-    settings.hooks.SessionStart.push({
-      matcher: '^(startup|resume|clear|compact|fork)$',
-      hooks: [
-        {
-          type: 'command',
-          command: hookCommand,
-        },
-      ],
-    });
-  // Configure SessionEnd hook to track session exit
+    ? settings.hooks.SessionStart : [];
   settings.hooks.SessionEnd = Array.isArray(settings.hooks.SessionEnd)
-    ? settings.hooks.SessionEnd
-    : [];
+    ? settings.hooks.SessionEnd : [];
 
-  const endHookCommand = `node "${ENSURE_PATH}" --end`;
-  const existingEndGroup = settings.hooks.SessionEnd.find((g) =>
-    g?.hooks?.some((h) => h?.command?.includes('ensure.mjs'))
+  upsertHook(
+    settings.hooks.SessionStart,
+    'ensure.mjs',
+    `node "${ENSURE_PATH}"`,
+    { matcher: '^(startup|resume|clear|compact|fork)$' }
   );
-
-  if (existingEndGroup) {
-    const existingEndHook = existingEndGroup.hooks.find((h) => h?.command?.includes('ensure.mjs'));
-    existingEndHook.command = endHookCommand;
-  } else {
-    settings.hooks.SessionEnd.push({
-      hooks: [
-        {
-          type: 'command',
-          command: endHookCommand,
-        },
-      ],
-    });
-  }
+  upsertHook(
+    settings.hooks.SessionEnd,
+    'ensure.mjs',
+    `node "${ENSURE_PATH}" --end`
+  );
 
   fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2) + '\n', 'utf8');
 
   console.log(`✓ Updated ${settingsPath}`);
   console.log('✓ Auto-start hook registered (proxy starts automatically with `claude`)');
-  console.log('✓ Inactivity auto-shutdown enabled (shuts down after 15 min of idle)\n');
+  console.log('✓ Session-aware auto-shutdown enabled (15 min after all sessions close)\n');
   console.log('Setup complete! You can now start Claude Code by typing `claude`.');
 }
 

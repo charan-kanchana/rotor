@@ -84,6 +84,6 @@ if (!(await isUp())) {
 if (await isUp()) {
   await notifySession('start', payload);
 } else {
-  console.error('switchXprovider: proxy failed to start on ' + BASE);
+  console.error('rotor: proxy failed to start on ' + BASE);
   process.exit(1);
 }

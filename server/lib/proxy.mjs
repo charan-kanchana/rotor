@@ -73,7 +73,7 @@ function markSuccess(cfg, p, latencyMs) {
 export function mapModel(p, model) {
   if (typeof model !== 'string') return model;
   const base = model.replace(/\[.*\]$/, '');           // strip [1m], [200k] etc.
-  const m = /^switchx:(opus|sonnet|haiku)$/i.exec(base);
+  const m = /^rotor:(opus|fable|sonnet|haiku)$/i.exec(base);
   if (m) {
     const slot = m[1].toLowerCase();
     const models = p.models || {};
@@ -82,6 +82,7 @@ export function mapModel(p, model) {
   // standard Anthropic model names -> map to provider slots
   const low = base.toLowerCase();
   if (low.includes('opus')) return (p.models || {}).opus || base;
+  if (low.includes('fable')) return (p.models || {}).fable || (p.models || {}).sonnet || base;
   if (low.includes('sonnet')) return (p.models || {}).sonnet || base;
   if (low.includes('haiku')) return (p.models || {}).haiku || base;
   return model;
@@ -232,8 +233,8 @@ export async function handleProxy(req, res, cfg, rawBody) {
       error: {
         type: 'overloaded_error',
         message: allDownCooling
-          ? `switchXprovider: all providers are down — retrying them at most once per minute. Open http://127.0.0.1:${cfg.port} to check status.`
-          : `switchXprovider: no enabled providers configured. Open http://127.0.0.1:${cfg.port} to add one.`,
+          ? `rotor: all providers are down — retrying them at most once per minute. Open http://127.0.0.1:${cfg.port} to check status.`
+          : `rotor: no enabled providers configured. Open http://127.0.0.1:${cfg.port} to add one.`,
       },
     }));
     return;
@@ -298,13 +299,13 @@ export async function handleProxy(req, res, cfg, rawBody) {
 
   res.writeHead(lastErr?.status || 502, {
     'content-type': 'application/json',
-    'x-switchx-error': 'all providers failed',
+    'x-rotor-error': 'all providers failed',
   });
   res.end(JSON.stringify({
     type: 'error',
     error: {
       type: 'api_error',
-      message: `switchXprovider: all providers failed. Last error: ${lastErr?.status || 'unknown'} ${String(lastErr?.text || '').slice(0, 200)}`,
+      message: `rotor: all providers failed. Last error: ${lastErr?.status || 'unknown'} ${String(lastErr?.text || '').slice(0, 200)}`,
     },
   }));
 }

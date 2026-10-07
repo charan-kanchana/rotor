@@ -26,10 +26,14 @@ const p = {
   },
 };
 
-assert.equal(mapModel(p, 'switchx:opus'), 'my-custom-opus');
-assert.equal(mapModel(p, 'switchx:sonnet'), 'my-custom-sonnet');
-assert.equal(mapModel(p, 'switchx:haiku'), 'my-custom-sonnet', 'haiku should fallback to sonnet');
-assert.equal(mapModel(p, 'switchx:sonnet[1m]'), 'my-custom-sonnet', 'bracket suffix should be stripped');
+assert.equal(mapModel(p, 'rotor:opus'), 'my-custom-opus');
+assert.equal(mapModel(p, 'rotor:sonnet'), 'my-custom-sonnet');
+assert.equal(mapModel(p, 'rotor:haiku'), 'my-custom-sonnet', 'haiku should fallback to sonnet');
+assert.equal(mapModel(p, 'rotor:fable'), 'my-custom-sonnet', 'fable should fallback to sonnet when unassigned');
+const pWithFable = { ...p, models: { ...p.models, fable: 'my-custom-fable' } };
+assert.equal(mapModel(pWithFable, 'rotor:fable'), 'my-custom-fable');
+assert.equal(mapModel(pWithFable, 'claude-fable-5-1'), 'my-custom-fable');
+assert.equal(mapModel(p, 'rotor:sonnet[1m]'), 'my-custom-sonnet', 'bracket suffix should be stripped');
 assert.equal(mapModel(p, 'claude-3-5-sonnet-20241022'), 'my-custom-sonnet', 'standard sonnet should map to sonnet slot');
 assert.equal(mapModel(p, 'claude-3-opus-20240229'), 'my-custom-opus', 'standard opus should map to opus slot');
 assert.equal(mapModel(p, 'other-model'), 'other-model');
@@ -64,7 +68,7 @@ assert.strictEqual(simSessions.size, 1, 'dead session should be cleaned up');
 assert.ok(simSessions.has('s1'), 'live session should be preserved');
 
 // OpenRouter auth & endpoint reachability checks
-import { checkAuth } from '../server/lib/health.mjs';
+import { checkAuth, deepCheck } from '../server/lib/health.mjs';
 
 const orDummy = await checkAuth({
   id: 'openrouter',
@@ -82,4 +86,12 @@ const unreachable = await checkAuth({
 });
 assert.strictEqual(unreachable.ok, false, 'Unreachable endpoint must fail check');
 
-console.log('All switchXprovider self-checks passed!');
+const llm7Probe = await checkAuth({
+  id: 'llm7',
+  baseUrl: 'https://api.llm7.io/v1',
+  apiKey: 'dummy-key',
+  protocol: 'anthropic',
+});
+assert.strictEqual(llm7Probe.ok, false, 'llm7 with Anthropic protocol and unavailable model must fail probe');
+
+console.log('All rotor self-checks passed!');

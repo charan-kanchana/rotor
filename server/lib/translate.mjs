@@ -1,4 +1,4 @@
-// switchXprovider — Anthropic ⇄ OpenAI protocol translation.
+// rotor — Anthropic ⇄ OpenAI protocol translation.
 //
 // The proxy speaks Anthropic Messages format with Claude Code. Providers in
 // the OpenAI ecosystem (Google AI Studio, NVIDIA NIM, Groq, Together, …)

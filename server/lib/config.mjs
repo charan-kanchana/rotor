@@ -3,14 +3,14 @@ import path from 'node:path';
 import os from 'node:os';
 import crypto from 'node:crypto';
 
-export const DIR = process.env.SWITCHX_HOME
-  ? path.resolve(process.env.SWITCHX_HOME)
-  : path.join(os.homedir(), '.claude', 'switchx');
+export const DIR = process.env.ROTOR_HOME
+  ? path.resolve(process.env.ROTOR_HOME)
+  : path.join(os.homedir(), '.claude', 'rotor');
 export const CONFIG_PATH = path.join(DIR, 'config.json');
 export const LOG_PATH = path.join(DIR, 'server.log');
 
 export const DEFAULT_PORT = 8787;
-export const LOCAL_TOKEN = 'switchx-local';
+export const LOCAL_TOKEN = 'rotor-local';
 export const PROCESS_START = Date.now();
 
 const DEFAULTS = {
@@ -19,29 +19,6 @@ const DEFAULTS = {
   stats: {},
   events: [],
 };
-
-const TEMPLATES = [
-  {
-    id: 'template-anthropic',
-    name: 'Anthropic (template)',
-    baseUrl: 'https://api.anthropic.com',
-    apiKey: '',
-    authStyle: 'auto',
-    priority: 1,
-    enabled: false,
-    models: { opus: 'claude-opus-5', sonnet: 'claude-sonnet-5', haiku: 'claude-haiku-4-5-20251001' },
-  },
-  {
-    id: 'template-openrouter',
-    name: 'OpenRouter (template)',
-    baseUrl: 'https://openrouter.ai/api/v1',
-    apiKey: '',
-    authStyle: 'auto',
-    priority: 2,
-    enabled: false,
-    models: { opus: 'anthropic/claude-opus-5', sonnet: 'anthropic/claude-sonnet-5', haiku: 'anthropic/claude-haiku-4.5' },
-  },
-];
 
 export function load() {
   try {
@@ -57,10 +34,9 @@ export function load() {
     if (fileExisted) {
       const backupPath = `${CONFIG_PATH}.corrupt-${Date.now()}`;
       try { fs.copyFileSync(CONFIG_PATH, backupPath); } catch {}
-      console.error(`switchx: config.json unreadable (${err.message}) — backed up to ${backupPath}`);
+      console.error(`rotor: config.json unreadable (${err.message}) — backed up to ${backupPath}`);
     }
     const cfg = structuredClone(DEFAULTS);
-    cfg.providers = structuredClone(TEMPLATES);
     save(cfg);
     return cfg;
   }
@@ -81,7 +57,7 @@ export function persistSoon(cfg, delayMs = 3000) {
     try {
       save(cfg);
     } catch (err) {
-      console.error('switchx: failed to save config:', err.message);
+      console.error('rotor: failed to save config:', err.message);
     }
   }, delayMs);
   if (saveTimer.unref) saveTimer.unref();
