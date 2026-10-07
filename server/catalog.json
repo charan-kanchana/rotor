@@ -1,0 +1,317 @@
+{
+  "version": 1,
+  "updated": "2026-09-13",
+  "note": "Curated provider catalog shipped with the plugin. A remote catalog (same schema, served from a raw GitHub URL) can be added in Settings and overrides entries with matching ids. Model IDs change often — always verify against the provider's docs. Sign-up links support switchXprovider development.",
+  "providers": [
+    {
+      "id": "agentrouter",
+      "name": "AgentRouter",
+      "baseUrl": "https://agentrouter.org",
+      "authStyle": "auto",
+      "description": "Community gateway with GLM, DeepSeek and Claude-family models behind one endpoint. Claude Code clients only — it fingerprints user-agents, which the proxy handles. Free models available.",
+      "website": "https://agentrouter.org/register?aff=FcZX",
+      "pricing": "free tier + per-token",
+      "freeTier": true,
+      "rating": 4.5,
+      "tags": ["gateway", "multi-model", "free-models"],
+      "models": {
+        "opus": "glm-5.3",
+        "sonnet": "glm-5.3",
+        "haiku": "deepseek-v4-flash"
+      }
+    },
+    {
+      "id": "seekai",
+      "name": "SeekAi",
+      "baseUrl": "https://seekai.cc",
+      "authStyle": "auto",
+      "description": "Multi-model gateway with DeepSeek and Claude models. Watch for capacity hiccups under load — failover covers it.",
+      "website": "https://seekai.cc/sign-up?aff=IDSy",
+      "pricing": "per-token, free models at sign-up",
+      "freeTier": true,
+      "rating": 3.5,
+      "tags": ["gateway", "multi-model"],
+      "models": {
+        "opus": "deepseek-v4-flash",
+        "sonnet": "claude-opus-4-8",
+        "haiku": "deepseek-v4-flash"
+      }
+    },
+    {
+      "id": "gorouter",
+      "name": "GoRouter",
+      "baseUrl": "https://gorouter.app",
+      "authStyle": "auto",
+      "description": "Gateway focused on Claude-family models, including thinking variants. Cloudflare-fronted — expects Claude Code-shaped traffic.",
+      "website": "https://gorouter.app/sign-up?aff=QFQv",
+      "pricing": "free tier + per-token",
+      "freeTier": true,
+      "rating": 3.5,
+      "tags": ["gateway", "claude-models", "thinking"],
+      "models": {
+        "opus": "claude-opus-5",
+        "sonnet": "claude-opus-5-thinking",
+        "haiku": "claude-opus-5"
+      }
+    },
+    {
+      "id": "bynara",
+      "name": "Bynara",
+      "baseUrl": "https://router.bynara.id",
+      "authStyle": "auto",
+      "description": "Gateway with a generous free tier — MiMo, DeepSeek and MiniMax free models make it a solid last-resort fallback.",
+      "website": "https://router.bynara.id/register?ref=RHJ6924R",
+      "pricing": "free tier + per-token",
+      "freeTier": true,
+      "rating": 4,
+      "tags": ["gateway", "free-models", "fallback"],
+      "models": {
+        "opus": "mimo-v2.5-free",
+        "sonnet": "deepseek-v4-flash-free",
+        "haiku": "minimax-m3-free"
+      }
+    },
+    {
+      "id": "tabitoken",
+      "name": "TabiToken",
+      "baseUrl": "https://tabitoken.com",
+      "authStyle": "auto",
+      "dead": true,
+      "description": "Token-based gateway behind Cloudflare. Currently unreachable — kept in the catalog in case it returns. Model IDs aren't public — check your dashboard after signing up and fill them in when adding.",
+      "website": "https://tabitoken.com/sign-up?aff=7ECT",
+      "pricing": "free tier + per-token",
+      "freeTier": true,
+      "rating": 3,
+      "tags": ["gateway", "token-based"],
+      "models": {}
+    },
+    {
+      "id": "bluesminds",
+      "name": "BlueSminds",
+      "baseUrl": "https://api.bluesminds.com",
+      "authStyle": "auto",
+      "dead": true,
+      "description": "Anthropic-compatible gateway (new-api based). Currently unreachable — kept in the catalog in case it returns. Model IDs aren't public — check your dashboard after signing up.",
+      "website": "https://api.bluesminds.com/sign-up?aff=vB03",
+      "pricing": "free tier + per-token",
+      "freeTier": true,
+      "rating": 3,
+      "tags": ["gateway", "anthropic-compatible"],
+      "models": {}
+    },
+    {
+      "id": "bai",
+      "name": "B.AI",
+      "baseUrl": "https://chat.b.ai",
+      "authStyle": "auto",
+      "description": "Anthropic-compatible gateway. Model IDs aren't public — check your dashboard after signing up.",
+      "website": "https://chat.b.ai/chat?invite_code=RKJVQJ",
+      "pricing": "free tier, check site",
+      "freeTier": true,
+      "rating": 3,
+      "tags": ["gateway", "invite-based"],
+      "models": {}
+    },
+    {
+      "id": "apinex",
+      "name": "APInex",
+      "baseUrl": "https://apinex.bond",
+      "authStyle": "auto",
+      "description": "Anthropic-compatible gateway — \"one API for every model\". Free tier available. Model IDs aren't public — check your dashboard after signing up.",
+      "website": "https://apinex.bond",
+      "pricing": "free tier",
+      "freeTier": true,
+      "rating": 3.5,
+      "tags": ["gateway", "anthropic-compatible", "multi-model"],
+      "models": {}
+    },
+    {
+      "id": "orcarouter",
+      "name": "OrcaRouter",
+      "baseUrl": "https://www.orcarouter.ai",
+      "authStyle": "auto",
+      "description": "Gateway with 200+ models behind one API, incl. free Claude Opus/Sonnet slots and a free auto-router model (orcarouter/free). Anthropic endpoint supported.",
+      "website": "https://www.orcarouter.ai",
+      "pricing": "free models + per-token",
+      "freeTier": true,
+      "rating": 4,
+      "tags": ["gateway", "multi-model", "free-models"],
+      "models": {
+        "opus": "claude-opus-4-7",
+        "sonnet": "claude-sonnet-4-6",
+        "haiku": "orcarouter/free"
+      }
+    },
+    {
+      "id": "kiraai",
+      "name": "KiraAI",
+      "baseUrl": "https://kiraai.vn",
+      "authStyle": "auto",
+      "description": "Vietnamese gateway with free GLM-5.3, MiMo, Qwen and Kira models (daily free quota), plus paid partner models. Anthropic endpoint supported.",
+      "website": "https://kiraai.vn/?ref=pambodenshaheer",
+      "pricing": "free daily quota + per-token",
+      "freeTier": true,
+      "rating": 3.5,
+      "tags": ["gateway", "free-models", "multi-model"],
+      "models": {
+        "opus": "glm-5.3-free",
+        "sonnet": "glm-5.3-flash-free",
+        "haiku": "mimo-v2.5-free"
+      }
+    },
+    {
+      "id": "tokenrouter",
+      "name": "TokenRouter",
+      "baseUrl": "https://api.tokenrouter.com",
+      "authStyle": "auto",
+      "description": "Router with a free z-ai/glm-5.3-free model. ⚠ LIMITED-TIME free offering — the free tier may end without notice; treat it as a bonus lane, not a backbone. Anthropic endpoint supported.",
+      "website": "https://www.tokenrouter.com/models/z-ai/glm-5.3-free/",
+      "pricing": "free promo + per-token",
+      "freeTier": true,
+      "rating": 3,
+      "tags": ["gateway", "free-models", "promo"],
+      "models": {
+        "opus": "z-ai/glm-5.3-free",
+        "sonnet": "z-ai/glm-5.3-free",
+        "haiku": "z-ai/glm-5.3-free"
+      }
+    },
+    {
+      "id": "vyceai",
+      "name": "VyceAI",
+      "baseUrl": "https://vyceai.com",
+      "authStyle": "auto",
+      "description": "API proxy for Claude, GPT, DeepSeek, Gemini and more — one key, multiple models. Anthropic endpoint supported. Model IDs from your dashboard after sign-up.",
+      "website": "https://vyceai.com/signup?ref=VYCE_TFC239",
+      "pricing": "free tier + per-token",
+      "freeTier": true,
+      "rating": 3.5,
+      "tags": ["gateway", "anthropic-compatible", "multi-model"],
+      "models": {}
+    },
+    {
+      "id": "openrouter",
+      "name": "OpenRouter",
+      "baseUrl": "https://openrouter.ai/api/v1",
+      "authStyle": "auto",
+      "description": "The big model aggregator — hundreds of models behind one key, incl. a rotating pool of :free models (NVIDIA Nemotron Ultra, Ling, and more; the free pool changes, check the site). Anthropic endpoint supported.",
+      "website": "https://openrouter.ai/models?q=free",
+      "pricing": "free :free models + per-token",
+      "freeTier": true,
+      "rating": 4.5,
+      "tags": ["gateway", "aggregator", "free-models"],
+      "models": {
+        "opus": "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "sonnet": "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "haiku": "inclusionai/ling-3.0-flash-sante:free"
+      }
+    },
+    {
+      "id": "opencode",
+      "name": "OpenCode Zen",
+      "baseUrl": "https://opencode.ai/zen",
+      "authStyle": "auto",
+      "description": "Gateway from the OpenCode project — Claude, GPT, Gemini, GLM, DeepSeek and more behind one key, with free models (Nemotron, DeepSeek, MiMo free tiers). Anthropic endpoint supported.",
+      "website": "https://opencode.ai/zen",
+      "pricing": "free models + pay per request",
+      "freeTier": true,
+      "rating": 4,
+      "tags": ["gateway", "multi-model", "free-models"],
+      "models": {
+        "opus": "nemotron-3-ultra-free",
+        "sonnet": "deepseek-v4-flash-free",
+        "haiku": "mimo-v2.5-free"
+      }
+    },
+    {
+      "id": "googleaistudio",
+      "name": "Google AI Studio",
+      "baseUrl": "https://generativelanguage.googleapis.com/v1beta/openai",
+      "authStyle": "bearer",
+      "protocol": "openai",
+      "description": "Google's Gemini API with a free daily quota (rate-limited, no credit card). OpenAI-protocol endpoint — the proxy translates automatically. Get a key at aistudio.google.com and verify current model IDs there.",
+      "website": "https://aistudio.google.com/",
+      "pricing": "free daily quota + paid tiers",
+      "freeTier": true,
+      "rating": 4,
+      "tags": ["google", "gemini", "free-quota", "openai-protocol"],
+      "models": {
+        "opus": "gemini-3.5-pro",
+        "sonnet": "gemini-3.5-flash",
+        "haiku": "gemini-3.5-flash-lite"
+      }
+    },
+    {
+      "id": "nvidia",
+      "name": "NVIDIA NIM",
+      "baseUrl": "https://integrate.api.nvidia.com/v1",
+      "authStyle": "bearer",
+      "protocol": "openai",
+      "description": "NVIDIA's model catalog (Nemotron and partners) behind one key — free starter credits at sign-up. OpenAI-protocol endpoint — the proxy translates automatically. Verify current model IDs at build.nvidia.com.",
+      "website": "https://build.nvidia.com/explore/discover",
+      "pricing": "free starter credits + per-token",
+      "freeTier": true,
+      "rating": 3.5,
+      "tags": ["nvidia", "nemotron", "openai-protocol"],
+      "models": {
+        "opus": "nvidia/nemotron-3-ultra-1t",
+        "sonnet": "nvidia/nemotron-3.5-lightning",
+        "haiku": "nvidia/nemotron-3.5-lightning"
+      }
+    },
+    {
+      "id": "llm7",
+      "name": "LLM7",
+      "baseUrl": "https://api.llm7.io/v1",
+      "authStyle": "bearer",
+      "protocol": "openai",
+      "description": "Free gateway with a generous daily quota — 1,000,000 tokens/day on a free token (500,000 anonymous). Free tier covers turbo models only (DeepSeek V4 Flash, Codestral); Claude/GPT/Gemini IDs are pro-tier and need a subscription. OpenAI-protocol endpoint — the proxy translates automatically. Model IDs rotate often — verify at api.llm7.io/v1/models.",
+      "website": "https://dash.llm7.io/?r=2PZ",
+      "pricing": "1M free tokens/day + pro subscription",
+      "freeTier": true,
+      "rating": 4,
+      "tags": ["gateway", "multi-model", "free-quota", "openai-protocol"],
+      "models": {
+        "opus": "DeepSeek-V4-Flash-0731",
+        "sonnet": "DeepSeek-V4-Flash-0731",
+        "haiku": "codestral-latest"
+      }
+    },
+    {
+      "id": "agnesai",
+      "name": "Agnes AI",
+      "baseUrl": "https://apihub.agnes-ai.com/v1",
+      "authStyle": "bearer",
+      "protocol": "openai",
+      "description": "Singapore-based gateway for Agnes' own multimodal model family — text, image and video behind one key. Free tier with request quotas; agnes-2.5-flash (512K context, tools, vision, agent workflows) is the daily driver, pro models need a subscription. OpenAI-protocol endpoint — the proxy translates automatically. Verify quotas in the platform console.",
+      "website": "https://platform.agnes-ai.com/",
+      "pricing": "free tier + subscription plans",
+      "freeTier": true,
+      "rating": 3.5,
+      "tags": ["gateway", "multimodal", "free-quota", "openai-protocol"],
+      "models": {
+        "opus": "agnes-2.5-flash",
+        "sonnet": "agnes-2.5-flash",
+        "haiku": "agnes-1.5-flash"
+      }
+    },
+    {
+      "id": "groq",
+      "name": "Groq",
+      "baseUrl": "https://api.groq.com/openai/v1",
+      "authStyle": "bearer",
+      "protocol": "openai",
+      "description": "LPU inference — open models (GPT-OSS, Qwen, Llama) at extreme speed. Free tier needs no credit card: rate-limited (~30 req/min, 1K req/day, 200K tokens/day on chat models), org-level limits. Llama 70B moved to Enterprise-only — GPT-OSS 120B is the workhorse now. OpenAI-protocol endpoint — the proxy translates automatically. Verify live model IDs at console.groq.com.",
+      "website": "https://console.groq.com/",
+      "pricing": "free rate-limited tier + Developer plan (~10x limits)",
+      "freeTier": true,
+      "rating": 4,
+      "tags": ["lpu", "fast-inference", "free-quota", "openai-protocol"],
+      "models": {
+        "opus": "openai/gpt-oss-120b",
+        "sonnet": "openai/gpt-oss-120b",
+        "haiku": "openai/gpt-oss-20b"
+      }
+    }
+  ]
+}

@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>switchXprovider</title>
+<style>
+  :root {
+    --bg: #0a0a0d;
+    --surface: #121217;
+    --surface-2: #181820;
+    --surface-3: #22222d;
+    --border: #23232e;
+    --border-hover: #343444;
+    --text: #ededf2;
+    --muted: #8c8c9a;
+    --dim: #5c5c6b;
+    --accent: #6366f1;
+    --accent-hover: #4f46e5;
+    --accent-dim: rgba(99, 102, 241, 0.15);
+    --green: #10b981;
+    --green-dim: rgba(16, 185, 129, 0.15);
+    --amber: #f59e0b;
+    --amber-dim: rgba(245, 158, 11, 0.15);
+    --red: #ef4444;
+    --red-dim: rgba(239, 68, 68, 0.15);
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+    color-scheme: dark;
+  }
+
+  :root[data-theme="light"] {
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --surface-2: #f1f5f9;
+    --surface-3: #e2e8f0;
+    --border: #e2e8f0;
+    --border-hover: #cbd5e1;
+    --text: #0f172a;
+    --muted: #64748b;
+    --dim: #94a3b8;
+    --accent: #4f46e5;
+    --accent-hover: #4338ca;
+    --accent-dim: rgba(79, 70, 229, 0.1);
+    --green: #059669;
+    --green-dim: rgba(5, 150, 105, 0.1);
+    --amber: #d97706;
+    --amber-dim: rgba(217, 119, 6, 0.1);
+    --red: #dc2626;
+    --red-dim: rgba(220, 38, 38, 0.1);
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    color-scheme: light;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+  }
+
+  button, input, select {
+    font: inherit;
+    color: inherit;
+  }
+
+  /* Layout */
+  .sidebar {
+    width: 240px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    padding: 20px 14px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 10px 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+
+  .brand-logo {
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(135deg, var(--accent), #a855f7);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 15px;
+  }
+
+  .brand-title {
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: -0.02em;
+  }
+
+  .brand-badge {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    background: var(--accent-dim);
+    color: var(--accent);
+    border-radius: 4px;
+    letter-spacing: 0.04em;
+  }
+
+  .nav-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+  }
+
+  .nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    font-weight: 500;
+    color: var(--muted);
+    transition: all 0.15s ease;
+  }
+
+  .nav-btn:hover {
+    background: var(--surface-2);
+    color: var(--text);
+  }
+
+  .nav-btn.active {
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .nav-btn svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+
+  .nav-badge {
+    margin-left: auto;
+    font-size: 11px;
+    background: var(--surface-3);
+    color: var(--muted);
+    padding: 2px 7px;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+
+  .sidebar-footer {
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .status-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+  }
+
+  .status-dot.down {
+    background: var(--red);
+    box-shadow: 0 0 8px var(--red);
+  }
+
+  .theme-btn {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 6px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s ease;
+  }
+
+  .theme-btn:hover {
+    color: var(--text);
+  }
+
+  .main-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px 36px;
+    max-width: 1200px;
+  }
+
+  .view-panel {
+    display: none;
+  }
+
+  .view-panel.active {
+    display: block;
+    animation: fadeIn 0.15s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .view-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    gap: 16px;
+  }
+
+  .view-title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .view-sub {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 2px;
+  }
+
+  /* Buttons & Controls */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s ease;
+    text-decoration: none;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: var(--accent-hover);
+  }
+
+  .btn-secondary {
+    background: var(--surface-2);
+    border-color: var(--border);
+    color: var(--text);
+  }
+
+  .btn-secondary:hover {
+    background: var(--surface-3);
+    border-color: var(--border-hover);
+  }
+
+  .btn-sm {
+    padding: 4px 9px;
+    font-size: 12px;
+  }
+
+  .btn-icon {
+    padding: 6px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--muted);
+    cursor: pointer;
+  }
+
+  .btn-icon:hover {
+    color: var(--text);
+    background: var(--surface-3);
+  }
+
+  .btn-danger {
+    background: var(--red-dim);
+    color: var(--red);
+    border-color: transparent;
+  }
+
+  .btn-danger:hover {
+    background: var(--red);
+    color: white;
+  }
+
+  /* Stat cards */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 16px 20px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .stat-value {
+    font-size: 22px;
+    font-weight: 700;
+    margin-top: 6px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .stat-sub {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  /* Cards & Sections */
+  .section-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+
+  .section-card-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .section-title {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  /* Provider Table / Cards */
+  .provider-item {
+    display: grid;
+    grid-template-columns: 48px 1fr auto;
+    align-items: center;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    gap: 16px;
+    transition: background 0.15s ease;
+  }
+
+  .provider-item:last-child {
+    border-bottom: none;
+  }
+
+  .provider-item:hover {
+    background: var(--surface-2);
+  }
+
+  .priority-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .priority-btn {
+    background: transparent;
+    border: none;
+    color: var(--dim);
+    cursor: pointer;
+    font-size: 10px;
+    line-height: 1;
+    padding: 2px 4px;
+    border-radius: 3px;
+  }
+
+  .priority-btn:hover:not(:disabled) {
+    color: var(--text);
+    background: var(--surface-3);
+  }
+
+  .priority-btn:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+  }
+
+  .priority-rank {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+
+  .provider-main {
+    min-width: 0;
+  }
+
+  .provider-title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+  }
+
+  .provider-name {
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .badge-up { background: var(--green-dim); color: var(--green); }
+  .badge-down { background: var(--red-dim); color: var(--red); }
+  .badge-disabled { background: var(--surface-3); color: var(--dim); }
+  .badge-proto { background: var(--accent-dim); color: var(--accent); }
+  .badge-auth { background: var(--surface-3); color: var(--muted); }
+
+  .provider-meta {
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .provider-meta span {
+    font-family: var(--mono);
+  }
+
+  .model-tags {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+  }
+
+  .model-tag {
+    font-size: 11px;
+    font-family: var(--mono);
+    background: var(--surface-3);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--muted);
+  }
+
+  .model-tag strong {
+    color: var(--text);
+  }
+
+  .provider-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Event log */
+  .events-list {
+    max-height: 280px;
+    overflow-y: auto;
+  }
+
+  .event-item {
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    font-size: 13px;
+  }
+
+  .event-item:last-child {
+    border-bottom: none;
+  }
+
+  .event-time {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--dim);
+    flex-shrink: 0;
+  }
+
+  .event-msg {
+    color: var(--text);
+  }
+
+  /* Catalog grid */
+  .catalog-search {
+    padding: 8px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    width: 260px;
+  }
+
+  .catalog-search:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .catalog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+    padding: 16px 20px;
+  }
+
+  .catalog-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 12px;
+    transition: all 0.15s ease;
+  }
+
+  .catalog-card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-1px);
+  }
+
+  .catalog-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .catalog-title {
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .catalog-desc {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .catalog-models {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--dim);
+  }
+
+  /* Modal */
+  .modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .modal-backdrop.open {
+    display: flex;
+  }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 540px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    animation: modalIn 0.15s ease;
+  }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .modal-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal-title {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .modal-body {
+    padding: 20px;
+    max-height: calc(85vh - 120px);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .form-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .form-input, .form-select {
+    padding: 8px 12px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    width: 100%;
+  }
+
+  .form-input:focus, .form-select:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .form-hint {
+    font-size: 11px;
+    color: var(--dim);
+  }
+
+  .fetch-models-box {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .modal-footer {
+    padding: 14px 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  /* Toast notification */
+  .toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 200;
+  }
+
+  .toast {
+    padding: 10px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow);
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: toastIn 0.2s ease;
+  }
+
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .toast.success { border-color: var(--green); }
+  .toast.error { border-color: var(--red); }
+
+  .empty-state {
+    padding: 36px 20px;
+    text-align: center;
+    color: var(--muted);
+  }
+
+  .loading-spinner {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-logo">X</div>
+    <div>
+      <div class="brand-title">switchXprovider</div>
+    </div>
+    <span class="brand-badge">proxy</span>
+  </div>
+
+  <nav class="nav-menu">
+    <button class="nav-btn active" data-view="overview">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="7" height="9" rx="1"/>
+        <rect x="14" y="3" width="7" height="5" rx="1"/>
+        <rect x="14" y="12" width="7" height="9" rx="1"/>
+        <rect x="3" y="16" width="7" height="5" rx="1"/>
+      </svg>
+      Overview
+    </button>
+
+    <button class="nav-btn" data-view="providers">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+      Providers
+      <span class="nav-badge" id="nav-provider-count">0</span>
+    </button>
+
+    <a class="nav-btn" href="/chat" style="text-decoration: none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+      Chat
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="status-pill">
+      <span class="status-dot" id="footer-status-dot"></span>
+      <span id="footer-status-text">Online :8787</span>
+    </div>
+    <button class="theme-btn" id="theme-toggle" title="Toggle theme">
+      <svg id="theme-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="5"/>
+        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+      </svg>
+    </button>
+  </div>
+</aside>
+
+<main class="main-content">
+
+  <!-- Overview View -->
+  <section class="view-panel active" id="view-overview">
+    <div class="view-header">
+      <div>
+        <h1 class="view-title">System Overview</h1>
+        <div class="view-sub">Proxy routing status, provider health, and event log</div>
+      </div>
+      <button class="btn btn-secondary btn-sm" id="btn-refresh-overview">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M23 4v6h-6M1 20v-6h6"/>
+          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+        </svg>
+        Refresh
+      </button>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Active Provider</div>
+        <div class="stat-value" id="stat-active-provider">—</div>
+        <div class="stat-sub" id="stat-active-sub">Directing current requests</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Proxy Status</div>
+        <div class="stat-value" style="color: var(--green);">Online</div>
+        <div class="stat-sub" id="stat-uptime">Uptime: 0s</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Configured Providers</div>
+        <div class="stat-value" id="stat-total-providers">0</div>
+        <div class="stat-sub" id="stat-healthy-providers">0 healthy</div>
+      </div>
+    </div>
+
+    <!-- Provider Health Summary Cards -->
+    <div class="section-card">
+      <div class="section-card-header">
+        <span class="section-title">Provider Health Checks</span>
+        <button class="btn btn-secondary btn-sm" id="btn-test-all">Test All</button>
+      </div>
+      <div id="overview-provider-cards">
+        <div class="empty-state">No providers configured yet.</div>
+      </div>
+    </div>
+
+    <!-- Event History -->
+    <div class="section-card">
+      <div class="section-card-header">
+        <span class="section-title">Recent Event History</span>
+        <button class="btn btn-secondary btn-sm" id="btn-clear-events">Clear Log</button>
+      </div>
+      <div class="events-list" id="events-list">
+        <div class="empty-state">No events recorded.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Providers & Discover Merged View -->
+  <section class="view-panel" id="view-providers">
+    <div class="view-header">
+      <div>
+        <h1 class="view-title">Providers & Catalog</h1>
+        <div class="view-sub">Manage active routing priority, test alive status, and discover providers</div>
+      </div>
+      <button class="btn btn-primary" id="btn-add-custom">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Add Custom Provider
+      </button>
+    </div>
+
+    <!-- Configured Providers -->
+    <div class="section-card">
+      <div class="section-card-header">
+        <span class="section-title">Active Providers (Failover Priority)</span>
+      </div>
+      <div id="configured-providers-list">
+        <div class="empty-state">No providers configured. Click "Add Custom Provider" or pick from the catalog below.</div>
+      </div>
+    </div>
+
+    <!-- Catalog / Discover -->
+    <div class="section-card">
+      <div class="section-card-header">
+        <div>
+          <span class="section-title">Discover Providers</span>
+          <div class="view-sub">Pre-configured catalog. Click "+ Add to Proxy" to quickly add with your API key.</div>
+        </div>
+        <input type="text" class="catalog-search" id="catalog-search" placeholder="Search catalog...">
+      </div>
+      <div class="catalog-grid" id="catalog-grid">
+        <div class="empty-state">Loading provider catalog...</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Add / Edit Provider Modal -->
+<div class="modal-backdrop" id="provider-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title">Add Provider</span>
+      <button class="btn-icon" id="modal-close">&times;</button>
+    </div>
+    <form id="provider-form">
+      <div class="modal-body">
+        <input type="hidden" id="form-provider-id">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="form-name">Provider Name</label>
+            <input type="text" class="form-input" id="form-name" placeholder="e.g. OpenRouter, DeepSeek" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="form-protocol">Protocol</label>
+            <select class="form-select" id="form-protocol">
+              <option value="anthropic">Anthropic API</option>
+              <option value="openai">OpenAI Compatible</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="form-base-url">Base URL</label>
+          <input type="url" class="form-input" id="form-base-url" placeholder="https://api.example.com" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="form-auth-style">Auth Header</label>
+            <select class="form-select" id="form-auth-style">
+              <option value="auto">Auto-detect</option>
+              <option value="bearer">Bearer token</option>
+              <option value="anthropic">x-api-key (Anthropic)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="form-api-key">API Key</label>
+            <input type="password" class="form-input" id="form-api-key" placeholder="Enter key (leave blank to keep)">
+          </div>
+        </div>
+
+        <div class="fetch-models-box">
+          <div>
+            <div style="font-weight: 600; font-size: 13px;">Discover Provider Models</div>
+            <div class="form-hint" id="fetch-models-hint">Queries endpoint to list available model IDs</div>
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-fetch-models">Fetch Models</button>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Claude Model Sentinel Mapping</label>
+          <div class="form-hint" style="margin-bottom: 8px;">Map Claude Code requests (opus/sonnet/haiku) to this provider's model IDs</div>
+          
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: grid; grid-template-columns: 80px 1fr; align-items: center; gap: 8px;">
+              <span style="font-family: var(--mono); font-size: 12px; color: var(--muted);">opus:</span>
+              <input type="text" class="form-input" id="form-model-opus" placeholder="e.g. claude-3-opus, deepseek-r1" list="fetched-models-list">
+            </div>
+            <div style="display: grid; grid-template-columns: 80px 1fr; align-items: center; gap: 8px;">
+              <span style="font-family: var(--mono); font-size: 12px; color: var(--muted);">sonnet:</span>
+              <input type="text" class="form-input" id="form-model-sonnet" placeholder="e.g. claude-3-5-sonnet, deepseek-chat" list="fetched-models-list">
+            </div>
+            <div style="display: grid; grid-template-columns: 80px 1fr; align-items: center; gap: 8px;">
+              <span style="font-family: var(--mono); font-size: 12px; color: var(--muted);">haiku:</span>
+              <input type="text" class="form-input" id="form-model-haiku" placeholder="e.g. claude-3-5-haiku, mistral-small" list="fetched-models-list">
+            </div>
+          </div>
+          <datalist id="fetched-models-list"></datalist>
+        </div>
+
+        <div class="form-group" style="flex-direction: row; align-items: center; gap: 10px;">
+          <input type="checkbox" id="form-enabled" checked style="width: 16px; height: 16px;">
+          <label for="form-enabled" style="font-weight: 500;">Enable this provider in proxy rotation</label>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="modal-cancel">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="modal-submit">Save Provider</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+  let state = {
+    status: null,
+    catalog: [],
+    currentTheme: localStorage.getItem('switchx_theme') || 'dark',
+  };
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    state.currentTheme = theme;
+    localStorage.setItem('switchx_theme', theme);
+  }
+  applyTheme(state.currentTheme);
+
+  document.getElementById('theme-toggle').addEventListener('click', () => {
+    applyTheme(state.currentTheme === 'dark' ? 'light' : 'dark');
+  });
+
+  // Navigation
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      const viewId = 'view-' + btn.getAttribute('data-view');
+      const target = document.getElementById(viewId);
+      if (target) target.classList.add('active');
+    });
+  });
+
+  function showToast(msg, type = 'info') {
+    const box = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = msg;
+    box.appendChild(toast);
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      setTimeout(() => toast.remove(), 200);
+    }, 3200);
+  }
+
+  async function api(path, opts = {}) {
+    const res = await fetch(path, {
+      ...opts,
+      headers: {
+        'content-type': 'application/json',
+        ...(opts.headers || {}),
+      },
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok && !data.error) data.error = `HTTP ${res.status}`;
+    return data;
+  }
+
+  async function loadStatus() {
+    const data = await api('/api/status');
+    if (!data.providers) return;
+    state.status = data;
+    renderStatus();
+  }
+
+  async function loadCatalog() {
+    const data = await api('/api/catalog');
+    state.catalog = data.providers || [];
+    renderCatalog();
+  }
+
+  function renderStatus() {
+    const { port, uptimeSec, activeProvider, providers, events } = state.status;
+    document.getElementById('footer-status-text').textContent = `Online :${port}`;
+    document.getElementById('nav-provider-count').textContent = providers.length;
+    document.getElementById('stat-active-provider').textContent = activeProvider || 'None';
+    document.getElementById('stat-total-providers').textContent = providers.length;
+
+    const healthyCount = providers.filter(p => p.status === 'up').length;
+    document.getElementById('stat-healthy-providers').textContent = `${healthyCount} healthy`;
+
+    const uptimeMin = Math.floor(uptimeSec / 60);
+    const uptimeHrs = Math.floor(uptimeMin / 60);
+    const uptimeStr = uptimeHrs > 0 ? `${uptimeHrs}h ${uptimeMin % 60}m` : `${uptimeSec}s`;
+    document.getElementById('stat-uptime').textContent = `Uptime: ${uptimeStr}`;
+
+    renderOverviewHealthCards(providers);
+    renderEvents(events);
+    renderConfiguredProviders(providers);
+  }
+
+  function renderOverviewHealthCards(providers) {
+    const container = document.getElementById('overview-provider-cards');
+    if (!providers.length) {
+      container.innerHTML = '<div class="empty-state">No providers configured yet.</div>';
+      return;
+    }
+
+    container.innerHTML = providers.map(p => {
+      const isUp = p.status === 'up';
+      const isDown = p.status === 'down';
+      const statusBadge = isUp 
+        ? '<span class="badge badge-up">UP</span>' 
+        : isDown 
+        ? `<span class="badge badge-down">DOWN (${p.statusDetail || 'fail'})</span>`
+        : '<span class="badge badge-disabled">DISABLED</span>';
+
+      return `
+        <div class="provider-item">
+          <div class="priority-rank">#${p.priority || '—'}</div>
+          <div class="provider-main">
+            <div class="provider-title-row">
+              <span class="provider-name">${escapeHtml(p.name)}</span>
+              ${statusBadge}
+              <span class="badge badge-proto">${p.protocol}</span>
+            </div>
+            <div class="provider-meta">
+              <span>${escapeHtml(p.baseUrl)}</span>
+              <span>Reqs: ${p.stats.requests}</span>
+              <span>Lat: ${p.stats.emaLatencyMs ? p.stats.emaLatencyMs + 'ms' : '—'}</span>
+            </div>
+          </div>
+          <div class="provider-actions">
+            ${isDown ? `<button class="btn btn-secondary btn-sm" onclick="resetProvider('${p.id}')">Reset</button>` : ''}
+            <button class="btn btn-secondary btn-sm" id="test-btn-${p.id}" onclick="testProvider('${p.id}')">Test Alive</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderConfiguredProviders(providers) {
+    const container = document.getElementById('configured-providers-list');
+    if (!providers.length) {
+      container.innerHTML = '<div class="empty-state">No providers configured. Click "Add Custom Provider" or pick from the catalog below.</div>';
+      return;
+    }
+
+    const maxPriority = providers.length;
+    container.innerHTML = providers.map((p, idx) => {
+      const isUp = p.status === 'up';
+      const isDown = p.status === 'down';
+      const statusBadge = isUp 
+        ? '<span class="badge badge-up">UP</span>' 
+        : isDown 
+        ? `<span class="badge badge-down">DOWN</span>`
+        : '<span class="badge badge-disabled">DISABLED</span>';
+
+      const modelsHtml = Object.entries(p.models || {})
+        .filter(([, v]) => v)
+        .map(([k, v]) => `<span class="model-tag"><strong>${k}:</strong> ${escapeHtml(v)}</span>`)
+        .join('');
+
+      return `
+        <div class="provider-item">
+          <div class="priority-controls">
+            <button class="priority-btn" ${idx === 0 ? 'disabled' : ''} onclick="movePriority('${p.id}', 'up')" title="Move Up">▲</button>
+            <span class="priority-rank">${p.priority || idx + 1}</span>
+            <button class="priority-btn" ${idx === maxPriority - 1 ? 'disabled' : ''} onclick="movePriority('${p.id}', 'down')" title="Move Down">▼</button>
+          </div>
+          <div class="provider-main">
+            <div class="provider-title-row">
+              <span class="provider-name">${escapeHtml(p.name)}</span>
+              ${statusBadge}
+              <span class="badge badge-proto">${p.protocol}</span>
+              <span class="badge badge-auth">${p.authStyle}</span>
+              <span style="font-family: var(--mono); font-size: 11px; color: var(--dim);">${escapeHtml(p.maskedKey)}</span>
+            </div>
+            <div class="provider-meta">
+              <span>${escapeHtml(p.baseUrl)}</span>
+              <span>Req: ${p.stats.requests}</span>
+              <span>Fail: ${p.stats.failures}</span>
+            </div>
+            ${modelsHtml ? `<div class="model-tags">${modelsHtml}</div>` : ''}
+          </div>
+          <div class="provider-actions">
+            ${isDown ? `<button class="btn btn-secondary btn-sm" onclick="resetProvider('${p.id}')">Reset</button>` : ''}
+            <button class="btn btn-secondary btn-sm" id="test-btn-p-${p.id}" onclick="testProvider('${p.id}')">Test</button>
+            <button class="btn btn-secondary btn-sm" onclick="editProvider('${p.id}')">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteProvider('${p.id}')">Delete</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderEvents(events = []) {
+    const container = document.getElementById('events-list');
+    if (!events || !events.length) {
+      container.innerHTML = '<div class="empty-state">No events recorded.</div>';
+      return;
+    }
+    container.innerHTML = events.slice(0, 30).map(e => {
+      const time = e.ts ? new Date(e.ts).toLocaleTimeString() : '';
+      return `
+        <div class="event-item">
+          <span class="event-time">${time}</span>
+          <span class="event-msg">${escapeHtml(e.msg || '')}</span>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderCatalog(filterText = '') {
+    const container = document.getElementById('catalog-grid');
+    const term = filterText.toLowerCase().trim();
+    const items = state.catalog.filter(p => {
+      if (!term) return true;
+      return (p.name && p.name.toLowerCase().includes(term)) ||
+             (p.description && p.description.toLowerCase().includes(term)) ||
+             (p.id && p.id.toLowerCase().includes(term));
+    });
+
+    if (!items.length) {
+      container.innerHTML = '<div class="empty-state">No catalog providers matched search.</div>';
+      return;
+    }
+
+    container.innerHTML = items.map(p => {
+      const sonnetModel = p.models?.sonnet || p.models?.opus || Object.values(p.models || {})[0] || 'Default';
+      return `
+        <div class="catalog-card">
+          <div>
+            <div class="catalog-card-header">
+              <span class="catalog-title">${escapeHtml(p.name)}</span>
+              <span class="badge badge-proto">${p.protocol || 'anthropic'}</span>
+            </div>
+            <div class="catalog-desc">${escapeHtml(p.description || '')}</div>
+          </div>
+          <div>
+            <div class="catalog-models">Model: ${escapeHtml(sonnetModel)}</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+              ${p.website ? `<a href="${escapeHtml(p.website)}" target="_blank" rel="noopener" style="font-size: 11px; color: var(--accent); text-decoration: none;">Docs & Keys &rarr;</a>` : '<span></span>'}
+              <button class="btn btn-primary btn-sm" onclick="addFromCatalog('${p.id}')">+ Add to Proxy</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  document.getElementById('catalog-search').addEventListener('input', (e) => {
+    renderCatalog(e.target.value);
+  });
+
+  // Provider CRUD and Actions
+  window.testProvider = async function(id) {
+    const btn = document.getElementById(`test-btn-${id}`) || document.getElementById(`test-btn-p-${id}`);
+    if (btn) btn.innerHTML = '<span class="loading-spinner"></span>';
+    const res = await api(`/api/providers/${id}/test`, { method: 'POST' });
+    if (res.ok) {
+      showToast('Health check passed! Provider is alive.', 'success');
+    } else {
+      showToast(`Health check failed: ${res.missing?.length ? 'Missing models: ' + res.missing.join(', ') : 'Endpoint unreachable'}`, 'error');
+    }
+    await loadStatus();
+  };
+
+  window.resetProvider = async function(id) {
+    await api(`/api/providers/${id}/reset`, { method: 'POST' });
+    showToast('Provider cooldown reset.', 'success');
+    await loadStatus();
+  };
+
+  window.movePriority = async function(id, direction) {
+    await api(`/api/providers/${id}/${direction}`, { method: 'POST' });
+    await loadStatus();
+  };
+
+  window.deleteProvider = async function(id) {
+    const p = state.status?.providers?.find(x => x.id === id);
+    if (!confirm(`Delete provider "${p ? p.name : id}"?`)) return;
+    const res = await api(`/api/providers/${id}`, { method: 'DELETE' });
+    if (res.ok) {
+      showToast('Provider removed.', 'success');
+      await loadStatus();
+    } else {
+      showToast(`Failed to delete: ${res.error}`, 'error');
+    }
+  };
+
+  // Modal logic
+  const modal = document.getElementById('provider-modal');
+  const modalTitle = document.getElementById('modal-title');
+  const providerForm = document.getElementById('provider-form');
+
+  function openModal(title) {
+    modalTitle.textContent = title;
+    modal.classList.add('open');
+  }
+
+  function closeModal() {
+    modal.classList.remove('open');
+    providerForm.reset();
+    document.getElementById('form-provider-id').value = '';
+    document.getElementById('fetched-models-list').innerHTML = '';
+    document.getElementById('fetch-models-hint').textContent = 'Queries endpoint to list available model IDs';
+  }
+
+  document.getElementById('modal-close').addEventListener('click', closeModal);
+  document.getElementById('modal-cancel').addEventListener('click', closeModal);
+  document.getElementById('btn-add-custom').addEventListener('click', () => {
+    document.getElementById('form-provider-id').value = '';
+    document.getElementById('form-protocol').value = 'anthropic';
+    document.getElementById('form-auth-style').value = 'auto';
+    document.getElementById('form-enabled').checked = true;
+    openModal('Add Custom Provider');
+  });
+
+  window.editProvider = function(id) {
+    const p = state.status?.providers?.find(x => x.id === id);
+    if (!p) return;
+    document.getElementById('form-provider-id').value = p.id;
+    document.getElementById('form-name').value = p.name || '';
+    document.getElementById('form-base-url').value = p.baseUrl || '';
+    document.getElementById('form-protocol').value = p.protocol || 'anthropic';
+    document.getElementById('form-auth-style').value = p.authStyle || 'auto';
+    document.getElementById('form-api-key').value = '';
+    document.getElementById('form-api-key').placeholder = `Leave blank to keep (${p.maskedKey})`;
+    document.getElementById('form-model-opus').value = p.models?.opus || '';
+    document.getElementById('form-model-sonnet').value = p.models?.sonnet || '';
+    document.getElementById('form-model-haiku').value = p.models?.haiku || '';
+    document.getElementById('form-enabled').checked = p.enabled !== false;
+    openModal(`Edit Provider: ${p.name}`);
+  };
+
+  window.addFromCatalog = function(catalogId) {
+    const item = state.catalog.find(x => x.id === catalogId);
+    if (!item) return;
+    document.getElementById('form-provider-id').value = '';
+    document.getElementById('form-name').value = item.name || '';
+    document.getElementById('form-base-url').value = item.baseUrl || '';
+    document.getElementById('form-protocol').value = item.protocol || 'anthropic';
+    document.getElementById('form-auth-style').value = item.authStyle || 'auto';
+    document.getElementById('form-api-key').value = '';
+    document.getElementById('form-api-key').placeholder = 'Paste your API key here';
+    document.getElementById('form-model-opus').value = item.models?.opus || '';
+    document.getElementById('form-model-sonnet').value = item.models?.sonnet || '';
+    document.getElementById('form-model-haiku').value = item.models?.haiku || '';
+    document.getElementById('form-enabled').checked = true;
+    openModal(`Add ${item.name} to Proxy`);
+  };
+
+  // Fetch models button
+  document.getElementById('btn-fetch-models').addEventListener('click', async () => {
+    const baseUrl = document.getElementById('form-base-url').value.trim();
+    const apiKey = document.getElementById('form-api-key').value.trim();
+    const providerId = document.getElementById('form-provider-id').value;
+    const authStyle = document.getElementById('form-auth-style').value;
+    const hint = document.getElementById('fetch-models-hint');
+
+    if (!baseUrl) {
+      showToast('Enter Base URL first', 'error');
+      return;
+    }
+
+    hint.textContent = 'Querying models...';
+    const res = await api('/api/providers/fetch-models', {
+      method: 'POST',
+      body: JSON.stringify({ baseUrl, apiKey, providerId, authStyle }),
+    });
+
+    if (res.error) {
+      hint.textContent = res.error;
+      showToast(res.error, 'error');
+      return;
+    }
+
+    const models = res.models || [];
+    hint.textContent = `Found ${models.length} models. Pick below or keep typing.`;
+    const datalist = document.getElementById('fetched-models-list');
+    datalist.innerHTML = models.map(m => `<option value="${escapeHtml(m)}"></option>`).join('');
+    showToast(`Discovered ${models.length} models`, 'success');
+  });
+
+  // Submit form
+  providerForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const saveBtn = document.getElementById('modal-save');
+    const origText = saveBtn ? saveBtn.textContent : 'Save';
+    if (saveBtn) {
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Verifying key...';
+    }
+
+    try {
+      const id = document.getElementById('form-provider-id').value;
+      const body = {
+        name: document.getElementById('form-name').value.trim(),
+        baseUrl: document.getElementById('form-base-url').value.trim(),
+        protocol: document.getElementById('form-protocol').value,
+        authStyle: document.getElementById('form-auth-style').value,
+        apiKey: document.getElementById('form-api-key').value.trim(),
+        enabled: document.getElementById('form-enabled').checked,
+        models: {
+          opus: document.getElementById('form-model-opus').value.trim(),
+          sonnet: document.getElementById('form-model-sonnet').value.trim(),
+          haiku: document.getElementById('form-model-haiku').value.trim(),
+        },
+      };
+
+      let res;
+      if (id) {
+        res = await api(`/api/providers/${id}`, { method: 'PUT', body: JSON.stringify(body) });
+      } else {
+        res = await api('/api/providers', { method: 'POST', body: JSON.stringify(body) });
+      }
+
+      if (res.error) {
+        showToast(res.error, 'error');
+        return;
+      }
+
+      showToast(`Provider "${res.name}" verified & saved!`, 'success');
+      closeModal();
+      await loadStatus();
+    } finally {
+      if (saveBtn) {
+        saveBtn.disabled = false;
+        saveBtn.textContent = origText;
+      }
+    }
+  });
+
+  // Overview actions
+  document.getElementById('btn-refresh-overview').addEventListener('click', async () => {
+    await loadStatus();
+    showToast('Overview refreshed');
+  });
+
+  document.getElementById('btn-test-all').addEventListener('click', async () => {
+    const providers = state.status?.providers || [];
+    if (!providers.length) return;
+    showToast(`Testing ${providers.length} providers...`);
+    for (const p of providers) {
+      await api(`/api/providers/${p.id}/test`, { method: 'POST' });
+    }
+    await loadStatus();
+    showToast('All providers tested!', 'success');
+  });
+
+  document.getElementById('btn-clear-events').addEventListener('click', async () => {
+    await api('/api/events/clear', { method: 'POST' });
+    showToast('Event history cleared');
+    await loadStatus();
+  });
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+
+  // Periodic polling every 5s
+  loadStatus();
+  loadCatalog();
+  setInterval(loadStatus, 5000);
+</script>
+</body>
+</html>
