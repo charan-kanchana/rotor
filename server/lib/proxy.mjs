@@ -51,6 +51,7 @@ function markDown(cfg, p, kind, detail, retryAfterSec) {
   s.deadUntil = Date.now() + cooldownMs(kind, retryAfterSec, s);
   s.deadReason = `${kind}: ${String(detail).slice(0, 200)}`;
   s.lastError = { ts: Date.now(), kind, detail: String(detail).slice(0, 300) };
+  s.lastCheck = Date.now();
   logEvent(
     cfg,
     `Provider "${p.name}" down (${kind}${retryAfterSec ? `, retry-after ${retryAfterSec}s` : ''}) — cooldown ${Math.round((s.deadUntil - Date.now()) / 1000)}s. Detail: ${String(detail).slice(0, 120)}`
@@ -248,6 +249,7 @@ export async function handleProxy(req, res, cfg, rawBody) {
     try {
       const r = await attempt(p, req, rawBody, cfg);
       if (r.ok) {
+        logEvent(cfg, `→ ${p.name} (${Date.now() - t0}ms)`);
         markSuccess(cfg, p, Date.now() - t0);
         res.writeHead(r.resp.status, sanitizeRespHeaders(r.resp.headers));
 

@@ -113,6 +113,8 @@ async function main() {
   settings.env.ANTHROPIC_DEFAULT_FABLE_MODEL = 'rotor:fable';
   settings.env.ANTHROPIC_DEFAULT_SONNET_MODEL = 'rotor:sonnet';
   settings.env.ANTHROPIC_DEFAULT_HAIKU_MODEL = 'rotor:haiku';
+  settings.env.CLAUDE_CODE_MAX_CONTEXT_TOKENS = '1000000';
+  settings.env.CLAUDE_CODE_DISABLE_UNKNOWN_MODEL_WINDOW_ENFORCEMENT = '1';
 
   // Hooks: ensure the rotor entry exists without removing or modifying any
   // other hooks the user has set up (e.g. MCP hooks, other tool hooks).

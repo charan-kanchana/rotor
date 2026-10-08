@@ -68,7 +68,7 @@ export async function checkAuth(p) {
     const resp = await fetch(url, {
       method: 'POST',
       headers: authHeaders(p),
-      body: JSON.stringify({ model: probeModel, messages: [] }),
+      body: JSON.stringify({ model: probeModel, messages: [{ role: 'user', content: '.' }], max_tokens: 1 }),
       signal: ac.signal,
     });
     if (resp.ok) {
@@ -86,6 +86,10 @@ export async function checkAuth(p) {
     if (resp.status === 405) {
       drain(resp);
       return { ok: false, error: 'Method not allowed (405) — check Base URL and protocol' };
+    }
+    if (resp.status === 429) {
+      drain(resp);
+      return { ok: false, error: `Rate limited (429) — quota exhausted or too many requests` };
     }
     if (resp.status >= 500) {
       drain(resp);
@@ -179,8 +183,7 @@ export function startHealthLoop(getCfg) {
       if (!p.enabled || !p.apiKey) continue;
       const s = statsFor(cfg, p.id);
       if (!s.deadUntil || s.deadUntil <= Date.now()) continue;
-      const due = s.deadUntil - Date.now() <= PROBE_LEAD_MS
-        || Date.now() - (s.lastCheck || 0) >= RECHECK_MS;
+      const due = s.deadUntil - Date.now() <= PROBE_LEAD_MS;
       if (!due) continue;
 
       s.lastCheck = Date.now();
