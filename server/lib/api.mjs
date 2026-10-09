@@ -245,10 +245,6 @@ export async function handleApi(req, res, pathname, cfg) {
         apiKey,
         authStyle: ['anthropic', 'bearer', 'auto'].includes(body.authStyle) ? body.authStyle : 'auto',
       };
-      const auth = await checkAuth(target);
-      if (!auth.ok) {
-        return send(res, 200, { models: [], error: auth.error });
-      }
       let resp2;
       try {
         resp2 = await fetchModels(target);

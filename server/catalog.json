@@ -13,45 +13,15 @@
       "pricing": "free tier + per-token",
       "freeTier": true,
       "rating": 4.5,
-      "tags": ["gateway", "multi-model", "free-models"],
+      "tags": [
+        "gateway",
+        "multi-model",
+        "free-models"
+      ],
       "models": {
         "opus": "glm-5.3",
         "sonnet": "glm-5.3",
         "haiku": "deepseek-v4-flash"
-      }
-    },
-    {
-      "id": "seekai",
-      "name": "SeekAi",
-      "baseUrl": "https://seekai.cc",
-      "authStyle": "auto",
-      "description": "Multi-model gateway with DeepSeek and Claude models. Watch for capacity hiccups under load — failover covers it.",
-      "website": "https://seekai.cc/sign-up?aff=IDSy",
-      "pricing": "per-token, free models at sign-up",
-      "freeTier": true,
-      "rating": 3.5,
-      "tags": ["gateway", "multi-model"],
-      "models": {
-        "opus": "deepseek-v4-flash",
-        "sonnet": "claude-opus-4-8",
-        "haiku": "deepseek-v4-flash"
-      }
-    },
-    {
-      "id": "gorouter",
-      "name": "GoRouter",
-      "baseUrl": "https://gorouter.app",
-      "authStyle": "auto",
-      "description": "Gateway focused on Claude-family models, including thinking variants. Cloudflare-fronted — expects Claude Code-shaped traffic.",
-      "website": "https://gorouter.app/sign-up?aff=QFQv",
-      "pricing": "free tier + per-token",
-      "freeTier": true,
-      "rating": 3.5,
-      "tags": ["gateway", "claude-models", "thinking"],
-      "models": {
-        "opus": "claude-opus-5",
-        "sonnet": "claude-opus-5-thinking",
-        "haiku": "claude-opus-5"
       }
     },
     {
@@ -64,26 +34,16 @@
       "pricing": "free tier + per-token",
       "freeTier": true,
       "rating": 4,
-      "tags": ["gateway", "free-models", "fallback"],
+      "tags": [
+        "gateway",
+        "free-models",
+        "fallback"
+      ],
       "models": {
         "opus": "mimo-v2.5-free",
         "sonnet": "deepseek-v4-flash-free",
         "haiku": "minimax-m3-free"
       }
-    },
-    {
-      "id": "tabitoken",
-      "name": "TabiToken",
-      "baseUrl": "https://tabitoken.com",
-      "authStyle": "auto",
-      "dead": true,
-      "description": "Token-based gateway behind Cloudflare. Currently unreachable — kept in the catalog in case it returns. Model IDs aren't public — check your dashboard after signing up and fill them in when adding.",
-      "website": "https://tabitoken.com/sign-up?aff=7ECT",
-      "pricing": "free tier + per-token",
-      "freeTier": true,
-      "rating": 3,
-      "tags": ["gateway", "token-based"],
-      "models": {}
     },
     {
       "id": "bluesminds",
@@ -96,20 +56,10 @@
       "pricing": "free tier + per-token",
       "freeTier": true,
       "rating": 3,
-      "tags": ["gateway", "anthropic-compatible"],
-      "models": {}
-    },
-    {
-      "id": "bai",
-      "name": "B.AI",
-      "baseUrl": "https://chat.b.ai",
-      "authStyle": "auto",
-      "description": "Anthropic-compatible gateway. Model IDs aren't public — check your dashboard after signing up.",
-      "website": "https://chat.b.ai/chat?invite_code=RKJVQJ",
-      "pricing": "free tier, check site",
-      "freeTier": true,
-      "rating": 3,
-      "tags": ["gateway", "invite-based"],
+      "tags": [
+        "gateway",
+        "anthropic-compatible"
+      ],
       "models": {}
     },
     {
@@ -122,7 +72,11 @@
       "pricing": "free tier",
       "freeTier": true,
       "rating": 3.5,
-      "tags": ["gateway", "anthropic-compatible", "multi-model"],
+      "tags": [
+        "gateway",
+        "anthropic-compatible",
+        "multi-model"
+      ],
       "models": {}
     },
     {
@@ -135,28 +89,15 @@
       "pricing": "free models + per-token",
       "freeTier": true,
       "rating": 4,
-      "tags": ["gateway", "multi-model", "free-models"],
+      "tags": [
+        "gateway",
+        "multi-model",
+        "free-models"
+      ],
       "models": {
         "opus": "claude-opus-4-7",
         "sonnet": "claude-sonnet-4-6",
         "haiku": "orcarouter/free"
-      }
-    },
-    {
-      "id": "kiraai",
-      "name": "KiraAI",
-      "baseUrl": "https://kiraai.vn",
-      "authStyle": "auto",
-      "description": "Vietnamese gateway with free GLM-5.3, MiMo, Qwen and Kira models (daily free quota), plus paid partner models. Anthropic endpoint supported.",
-      "website": "https://kiraai.vn/?ref=pambodenshaheer",
-      "pricing": "free daily quota + per-token",
-      "freeTier": true,
-      "rating": 3.5,
-      "tags": ["gateway", "free-models", "multi-model"],
-      "models": {
-        "opus": "glm-5.3-free",
-        "sonnet": "glm-5.3-flash-free",
-        "haiku": "mimo-v2.5-free"
       }
     },
     {
@@ -169,7 +110,11 @@
       "pricing": "free promo + per-token",
       "freeTier": true,
       "rating": 3,
-      "tags": ["gateway", "free-models", "promo"],
+      "tags": [
+        "gateway",
+        "free-models",
+        "promo"
+      ],
       "models": {
         "opus": "z-ai/glm-5.3-free",
         "sonnet": "z-ai/glm-5.3-free",
@@ -186,7 +131,11 @@
       "pricing": "free tier + per-token",
       "freeTier": true,
       "rating": 3.5,
-      "tags": ["gateway", "anthropic-compatible", "multi-model"],
+      "tags": [
+        "gateway",
+        "anthropic-compatible",
+        "multi-model"
+      ],
       "models": {}
     },
     {
@@ -199,7 +148,11 @@
       "pricing": "free :free models + per-token",
       "freeTier": true,
       "rating": 4.5,
-      "tags": ["gateway", "aggregator", "free-models"],
+      "tags": [
+        "gateway",
+        "aggregator",
+        "free-models"
+      ],
       "models": {
         "opus": "nvidia/nemotron-3-ultra-550b-a55b:free",
         "sonnet": "nvidia/nemotron-3-ultra-550b-a55b:free",
@@ -216,7 +169,11 @@
       "pricing": "free models + pay per request",
       "freeTier": true,
       "rating": 4,
-      "tags": ["gateway", "multi-model", "free-models"],
+      "tags": [
+        "gateway",
+        "multi-model",
+        "free-models"
+      ],
       "models": {
         "opus": "nemotron-3-ultra-free",
         "sonnet": "deepseek-v4-flash-free",
@@ -234,7 +191,12 @@
       "pricing": "free daily quota + paid tiers",
       "freeTier": true,
       "rating": 4,
-      "tags": ["google", "gemini", "free-quota", "openai-protocol"],
+      "tags": [
+        "google",
+        "gemini",
+        "free-quota",
+        "openai-protocol"
+      ],
       "models": {
         "opus": "gemini-3.5-pro",
         "sonnet": "gemini-3.5-flash",
@@ -252,7 +214,11 @@
       "pricing": "free starter credits + per-token",
       "freeTier": true,
       "rating": 3.5,
-      "tags": ["nvidia", "nemotron", "openai-protocol"],
+      "tags": [
+        "nvidia",
+        "nemotron",
+        "openai-protocol"
+      ],
       "models": {
         "opus": "nvidia/nemotron-3-ultra-1t",
         "sonnet": "nvidia/nemotron-3.5-lightning",
@@ -270,7 +236,12 @@
       "pricing": "1M free tokens/day + pro subscription",
       "freeTier": true,
       "rating": 4,
-      "tags": ["gateway", "multi-model", "free-quota", "openai-protocol"],
+      "tags": [
+        "gateway",
+        "multi-model",
+        "free-quota",
+        "openai-protocol"
+      ],
       "models": {
         "opus": "DeepSeek-V4-Flash-0731",
         "sonnet": "DeepSeek-V4-Flash-0731",
@@ -288,7 +259,12 @@
       "pricing": "free tier + subscription plans",
       "freeTier": true,
       "rating": 3.5,
-      "tags": ["gateway", "multimodal", "free-quota", "openai-protocol"],
+      "tags": [
+        "gateway",
+        "multimodal",
+        "free-quota",
+        "openai-protocol"
+      ],
       "models": {
         "opus": "agnes-2.5-flash",
         "sonnet": "agnes-2.5-flash",
@@ -306,12 +282,181 @@
       "pricing": "free rate-limited tier + Developer plan (~10x limits)",
       "freeTier": true,
       "rating": 4,
-      "tags": ["lpu", "fast-inference", "free-quota", "openai-protocol"],
+      "tags": [
+        "lpu",
+        "fast-inference",
+        "free-quota",
+        "openai-protocol"
+      ],
       "models": {
         "opus": "openai/gpt-oss-120b",
         "sonnet": "openai/gpt-oss-120b",
         "haiku": "openai/gpt-oss-20b"
       }
+    },
+    {
+      "id": "kilo",
+      "name": "Kilo Gateway",
+      "baseUrl": "https://api.kilo.ai/api/gateway",
+      "authStyle": "bearer",
+      "protocol": "openai",
+      "freeTier": true,
+      "tags": [
+        "gateway",
+        "free-models",
+        "openai-protocol"
+      ],
+      "models": {
+        "opus": "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "sonnet": "nvidia/nemotron-3-super-120b-a12b:free",
+        "haiku": "kilo-auto/free"
+      }
+    },
+    {
+      "id": "airforce",
+      "name": "API.airforce",
+      "baseUrl": "https://api.airforce/v1",
+      "authStyle": "bearer",
+      "protocol": "openai",
+      "freeTier": true,
+      "tags": [
+        "gateway",
+        "free-models",
+        "openai-protocol"
+      ],
+      "models": {
+        "opus": "kimi-k2.7-code",
+        "sonnet": "gpt-oss-120b",
+        "haiku": "gpt-oss-20b"
+      }
+    },
+    {
+      "id": "tokenharbor",
+      "name": "Token Harbor",
+      "baseUrl": "https://tokenharbor.ai/v1",
+      "authStyle": "bearer",
+      "protocol": "openai",
+      "freeTier": true,
+      "tags": [
+        "gateway",
+        "free-models",
+        "openai-protocol"
+      ],
+      "models": {
+        "opus": "deepseek-v4.1-flash:free",
+        "sonnet": "deepseek-v4.1-flash:free",
+        "haiku": "deepseek-v4.1-flash:free"
+      }
+    },
+    {
+      "id": "bazaarlink",
+      "name": "Bazaarlink",
+      "baseUrl": "https://bazaarlink.ai/api/v1",
+      "authStyle": "bearer",
+      "protocol": "openai",
+      "freeTier": true,
+      "tags": [
+        "gateway",
+        "free-models",
+        "auto-router",
+        "openai-protocol"
+      ],
+      "models": {
+        "opus": "auto:free",
+        "sonnet": "auto:free",
+        "haiku": "auto:free"
+      }
+    },
+    {
+      "id": "opencode-go",
+      "name": "OpenCode Go",
+      "baseUrl": "https://opencode.ai/zen/go/v1",
+      "authStyle": "bearer",
+      "protocol": "openai",
+      "freeTier": true,
+      "tags": [
+        "gateway",
+        "free-models",
+        "openai-protocol"
+      ],
+      "models": {
+        "opus": "space-bunny-free",
+        "sonnet": "space-bunny-free",
+        "haiku": "space-bunny-free"
+      }
+    },
+    {
+      "id": "cline",
+      "name": "Cline",
+      "baseUrl": "https://api.cline.bot/api/v1",
+      "authStyle": "bearer",
+      "protocol": "openai",
+      "freeTier": true,
+      "tags": [
+        "gateway",
+        "free-models",
+        "openai-protocol"
+      ],
+      "models": {
+        "opus": "cline-free/muse-spark-1.3-contributor",
+        "sonnet": "cline-free/deepseek-v4.1-flash",
+        "haiku": "z-ai/glm-5.3-flash"
+      }
+    },
+    {
+      "id": "poolside",
+      "name": "Poolside",
+      "baseUrl": "https://inference.poolside.ai/v1",
+      "authStyle": "bearer",
+      "protocol": "openai",
+      "freeTier": true,
+      "tags": [
+        "free-quota",
+        "openai-protocol"
+      ],
+      "models": {}
+    },
+    {
+      "id": "kimchi",
+      "name": "Kimchi",
+      "baseUrl": "https://llm.kimchi.dev/openai/v1",
+      "authStyle": "bearer",
+      "protocol": "openai",
+      "freeTier": true,
+      "tags": [
+        "gateway",
+        "free-quota",
+        "openai-protocol"
+      ],
+      "models": {}
+    },
+    {
+      "id": "cloudflare-ai",
+      "name": "Cloudflare Workers AI",
+      "baseUrl": "https://api.cloudflare.com/client/v4/accounts/{accountId}/ai/v1",
+      "authStyle": "bearer",
+      "protocol": "openai",
+      "freeTier": true,
+      "tags": [
+        "free-quota",
+        "openai-protocol",
+        "needs-account-id"
+      ],
+      "models": {}
+    },
+    {
+      "id": "ollama-cloud",
+      "name": "Ollama Cloud",
+      "baseUrl": "https://ollama.com/v1",
+      "authStyle": "bearer",
+      "protocol": "openai",
+      "freeTier": true,
+      "tags": [
+        "ollama",
+        "free-quota",
+        "openai-protocol"
+      ],
+      "models": {}
     }
   ]
 }
