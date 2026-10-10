@@ -1,4 +1,4 @@
-﻿# Rotor
+# Rotor
 
 > Local proxy that routes Claude Code traffic across multiple LLM providers with automatic failover.
 
@@ -106,43 +106,21 @@ After setup, just run `claude` — the proxy starts automatically via session ho
 
 Live proxy status, active provider, request stats, and event log.
 
-![System Overview](docs/screenshots/overview.png)
-
 ### Provider Management
 
 Add, edit, reorder, test, and remove providers. Click **Test** to verify a key is live and not rate-limited.
-
-![Providers view](docs/screenshots/providers.png)
 
 ### Add Provider from Catalog
 
 Browse the curated catalog, select a provider, and enter your API key. Model IDs are auto-fetched.
 
-![Provider catalog](docs/screenshots/catalog.png)
-
 ### Add Provider Manually
 
 Manual form for providers not in the catalog — enter base URL, API key, protocol, and model slot IDs.
 
-![Add provider manually](docs/screenshots/add_provider.png)
-
 ### Failover in Action
 
 When a provider is rate-limited or errors, it is benched and traffic moves to the next. The event log shows each transition.
-
-![Failover event log](docs/screenshots/failover_log.png)
-
----
-
-## Screenshots to Capture
-
-| Filename                            | Screen                                                           | How to trigger                                           |
-| ----------------------------------- | ---------------------------------------------------------------- | -------------------------------------------------------- |
-| `docs/screenshots/overview.png`     | **System Overview** tab — stat cards, active provider, event log | Open `http://127.0.0.1:8787` with ≥1 provider configured |
-| `docs/screenshots/providers.png`    | **Providers** tab — list with status badges, Test/Reset buttons  | Switch to Providers tab with 2 providers added           |
-| `docs/screenshots/catalog.png`      | **Discover Catalog** — catalog grid with search                  | Click "Discover" button in Providers tab                 |
-| `docs/screenshots/add_provider.png` | **Add Provider** form — filled with URL, key, model slots        | Click "Add Provider" in Providers tab                    |
-| `docs/screenshots/failover_log.png` | **Event log** — provider going down, next taking over            | Trigger a rate limit or click Test on a bad key          |
 
 ---
 
