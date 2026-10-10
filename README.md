@@ -25,7 +25,7 @@ Rotor sits between Claude Code and your LLM providers at `127.0.0.1:8787`. When 
 | -------------- | --------------------------------------------- |
 | Runtime        | Node.js ≥ 18 (ESM)                            |
 | HTTP server    | `node:http`                                   |
-| Config storage | JSON at `~/.claude/rotor/config.json`         |
+| Config storage | JSON at `~/.rotor/config.json`                |
 | Frontend       | Single-file HTML/CSS/JS (`public/index.html`) |
 | Dependencies   | None                                          |
 
@@ -136,7 +136,7 @@ npm test
 
 ## Config File
 
-Config is stored at `~/.claude/rotor/config.json` (auto-created on first run). It is excluded from git. A backup of your original `~/.claude/settings.json` is saved to `~/.claude/settings.json.rotor-backup` before setup modifies it.
+Config is stored at `~/.rotor/config.json` (auto-created on first run). It is excluded from git. A backup of your original `~/.claude/settings.json` is saved to `~/.claude/settings.json.rotor-backup` before setup modifies it.
 
 ---
 

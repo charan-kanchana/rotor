@@ -5,7 +5,7 @@ import crypto from 'node:crypto';
 
 export const DIR = process.env.ROTOR_HOME
   ? path.resolve(process.env.ROTOR_HOME)
-  : path.join(os.homedir(), '.claude', 'rotor');
+  : path.join(os.homedir(), '.rotor');
 export const CONFIG_PATH = path.join(DIR, 'config.json');
 export const LOG_PATH = path.join(DIR, 'server.log');
 
