@@ -124,10 +124,11 @@ const server = http.createServer(async (req, res) => {
       const active = getLiveSessions().size;
       res.writeHead(200, { 'content-type': 'application/json', 'cache-control': 'no-store' });
       res.end(JSON.stringify({
-        ok: true,
+        status: "ok",
+        version: "0.11.0",
         port: PORT,
         activeSessions: active,
-        uptimeSec: Math.round((Date.now() - STARTED_AT) / 1000)
+        uptime: Math.round((Date.now() - STARTED_AT) / 1000)
       }));
       return;
     }
