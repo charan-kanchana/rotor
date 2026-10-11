@@ -855,12 +855,17 @@
   $('btn-test-all').addEventListener('click', async () => {
     const providers = state.status?.providers || [];
     if (!providers.length) return;
-    showToast(`Testing ${providers.length} providers...`);
-    for (const p of providers) {
-      await api(`/api/providers/${p.id}/test`, { method: 'POST' });
-    }
+    showToast(`Testing ${providers.length} provider${providers.length > 1 ? 's' : ''}…`);
+    const results = await Promise.all(
+      providers.map(p => api(`/api/providers/${p.id}/test`, { method: 'POST' }))
+    );
     await loadStatus();
-    showToast('All providers tested!', 'success');
+    const up = results.filter(r => r.ok).length;
+    const down = results.length - up;
+    const summary = down > 0
+      ? `${up} up, ${down} down`
+      : `${up} up`;
+    showToast(`Test All: ${summary}`, down > 0 ? 'error' : 'success');
   });
 
   $('btn-clear-events').addEventListener('click', async () => {

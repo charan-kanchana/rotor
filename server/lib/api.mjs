@@ -342,11 +342,19 @@ export async function handleApi(req, res, pathname, cfg) {
         if (action === 'test') {
           const { ok, missing, error } = await deepCheck(p);
           const s = statsFor(cfg, p.id);
-          if (ok && s.deadUntil) {
-            s.deadUntil = 0;
-            s.deadReason = null;
-            logEvent(cfg, `Provider "${p.name}" passed manual test — back in rotation`);
-          } else if (!ok) {
+          if (ok) {
+            if (s.deadUntil) {
+              s.deadUntil = 0;
+              s.deadReason = null;
+              logEvent(cfg, `Provider "${p.name}" passed manual test — back in rotation`);
+            }
+          } else {
+            // Mark the provider down so the badge reflects the failure.
+            const kind = /rate.limit|429|quota/i.test(error || '') ? 'rate'
+              : /auth|key|401|403/i.test(error || '') ? 'auth' : 'server';
+            s.deadUntil = Date.now() + (COOLDOWNS[kind] || 60_000);
+            s.deadReason = `${kind}: manual test`;
+            s.consecutiveFailures = (s.consecutiveFailures || 0) + 1;
             logEvent(cfg, `Provider "${p.name}" failed manual test${error ? ': ' + error : ''}`);
           }
           if (missing?.length) {
