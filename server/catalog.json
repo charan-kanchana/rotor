@@ -457,6 +457,24 @@
         "openai-protocol"
       ],
       "models": {}
+    },
+    {
+      "id": "oxion",
+      "name": "Oxion",
+      "baseUrl": "https://www.oxionai.com/v1",
+      "authStyle": "bearer",
+      "protocol": "openai",
+      "description": "Multi-model gateway with 30+ models and OpenAI-compatible endpoint. Free 0.5M starter tokens on sign-up.",
+      "website": "https://www.oxionai.com",
+      "pricing": "free tier + subscription",
+      "freeTier": true,
+      "tags": [
+        "gateway",
+        "multi-model",
+        "free-quota",
+        "openai-protocol"
+      ],
+      "models": {}
     }
   ]
 }
