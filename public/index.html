@@ -835,7 +835,11 @@
         showToast(res.error, 'error');
         return;
       }
-      showToast(`Provider "${res.name}" verified & saved!`, 'success');
+      if (res.status === 'down' && res.statusDetail) {
+        showToast(`Provider "${res.name}" saved (${res.statusDetail})`, 'warning');
+      } else {
+        showToast(`Provider "${res.name}" verified & saved!`, 'success');
+      }
       closeModal();
       await loadStatus();
     } finally {

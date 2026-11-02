@@ -10,7 +10,7 @@ import { statsFor, logEvent, persistSoon } from './config.mjs';
 const PROBE_LEAD_MS = 10_000;
 const RECHECK_MS = 30_000;
 const LOOP_MS = 5_000;
-const PROBE_TIMEOUT_MS = 10_000;
+const PROBE_TIMEOUT_MS = 25_000;
 const CLAUDE_UA = 'claude-cli/2.0.14 (external, cli)';
 
 export function drain(resp) {
@@ -60,7 +60,29 @@ export async function checkAuth(p) {
   const isOpenai = p.protocol === 'openai';
   const path = isOpenai ? '/chat/completions' : (base.endsWith('/v1') ? '/messages' : '/v1/messages');
   const url = base + path;
-  const probeModel = Object.values(p.models || {}).find(Boolean) || 'probe';
+  let probeModel = Object.values(p.models || {}).find(Boolean);
+  if (!probeModel) {
+    try {
+      const modelsResp = await fetchModels(p);
+      if (modelsResp.status === 401 || modelsResp.status === 403) {
+        drain(modelsResp);
+        return { ok: false, error: `Authentication failed (${modelsResp.status}) — check your API key` };
+      }
+      if (modelsResp.ok) {
+        const data = await modelsResp.json();
+        const list = Array.isArray(data) ? data : data?.data || data?.models || [];
+        const first = list.find((m) => {
+          const id = typeof m === 'string' ? m : m?.id;
+          return typeof id === 'string' && !/embed|guard|clip|reward|detector|calibration/i.test(id);
+        });
+        const id = typeof first === 'string' ? first : first?.id;
+        if (id) probeModel = id;
+      } else {
+        drain(modelsResp);
+      }
+    } catch {}
+  }
+  if (!probeModel) probeModel = 'probe';
 
   const ac = new AbortController();
   const timer = setTimeout(() => ac.abort(), PROBE_TIMEOUT_MS);
@@ -80,16 +102,28 @@ export async function checkAuth(p) {
       return { ok: false, error: `Authentication failed (${resp.status}) — check your API key` };
     }
     if (resp.status === 404) {
+      let detail = '';
+      try {
+        const j = await resp.json();
+        detail = j.error?.message || j.message || '';
+      } catch {}
       drain(resp);
-      return { ok: false, error: 'Endpoint not found (404) — check Base URL and protocol' };
+      if (/model/i.test(detail)) {
+        return { ok: false, error: `Model "${probeModel}" not found (404) — enter a valid model ID` };
+      }
+      return { ok: false, error: `Endpoint or model "${probeModel}" not found (404) — check Base URL and model ID` };
     }
     if (resp.status === 405) {
       drain(resp);
       return { ok: false, error: 'Method not allowed (405) — check Base URL and protocol' };
     }
+    if (resp.status === 410) {
+      drain(resp);
+      return { ok: false, error: `Model "${probeModel}" is deprecated / retired (410) — check provider models` };
+    }
     if (resp.status === 429) {
       drain(resp);
-      return { ok: false, error: `Rate limited (429) — quota exhausted or too many requests` };
+      return { ok: false, rateLimited: true, error: 'Rate limited (429) — quota exhausted or too many requests' };
     }
     if (resp.status >= 500) {
       drain(resp);
@@ -123,6 +157,13 @@ export async function checkAuth(p) {
     }
     return { ok: false, error: msg || `Provider rejected probe (${resp.status})` };
   } catch (err) {
+    if (err.name === 'AbortError' || /abort/i.test(err.message)) {
+      return {
+        ok: false,
+        timedOut: true,
+        error: `Verification timed out (${Math.round(PROBE_TIMEOUT_MS / 1000)}s) — provider took too long to respond`,
+      };
+    }
     return { ok: false, error: `Endpoint unreachable (${base}): ${err.message}` };
   } finally {
     clearTimeout(timer);

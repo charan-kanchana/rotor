@@ -282,10 +282,16 @@ export async function handleApi(req, res, pathname, cfg) {
         if (errors.length) return send(res, 400, { error: errors.join('; ') });
         if (!value.apiKey) return send(res, 400, { error: 'apiKey is required' });
 
+        let authResult = null;
         if (value.enabled) {
-          const auth = await checkAuth(value);
-          if (!auth.ok) {
-            return send(res, 400, { error: auth.error || 'Provider verification failed' });
+          authResult = await checkAuth(value);
+          if (!authResult.ok) {
+            if (authResult.timedOut || authResult.rateLimited) {
+              const reason = authResult.rateLimited ? 'rate limit' : 'probe timeout';
+              logEvent(cfg, `Provider "${value.name}" added with ${reason}: ${authResult.error}`);
+            } else {
+              return send(res, 400, { error: authResult.error || 'Provider verification failed' });
+            }
           }
         }
 
@@ -295,6 +301,12 @@ export async function handleApi(req, res, pathname, cfg) {
           priority: (cfg.providers.length || 0) + 1,
         };
         cfg.providers.push(p);
+        if (authResult && !authResult.ok) {
+          const s = statsFor(cfg, p.id);
+          const kind = authResult.rateLimited ? 'rate' : 'server';
+          s.deadUntil = Date.now() + (COOLDOWNS[kind] || 60_000);
+          s.deadReason = authResult.error;
+        }
         logEvent(cfg, `Provider "${p.name}" verified & added (priority ${p.priority})`);
         persistSoon(cfg, 0);
         return send(res, 201, providerView(cfg, p));
@@ -309,16 +321,32 @@ export async function handleApi(req, res, pathname, cfg) {
         const effectiveKey = value.apiKey || p.apiKey || '';
         const testCandidate = { ...p, ...value, apiKey: effectiveKey };
 
+        let authResult = null;
         if (value.enabled !== false && (value.apiKey || value.baseUrl !== p.baseUrl)) {
-          const auth = await checkAuth(testCandidate);
-          if (!auth.ok) {
-            return send(res, 400, { error: auth.error || 'Provider verification failed' });
+          authResult = await checkAuth(testCandidate);
+          if (!authResult.ok) {
+            if (authResult.timedOut || authResult.rateLimited) {
+              const reason = authResult.rateLimited ? 'rate limit' : 'probe timeout';
+              logEvent(cfg, `Provider "${p.name}" updated with ${reason}: ${authResult.error}`);
+            } else {
+              return send(res, 400, { error: authResult.error || 'Provider verification failed' });
+            }
           }
         }
 
         Object.assign(p, value);
         if (!value.apiKey) p.apiKey = effectiveKey;
         if (body.priority != null) p.priority = Math.max(1, parseInt(body.priority, 10) || 1);
+        if (authResult && !authResult.ok) {
+          const s = statsFor(cfg, p.id);
+          const kind = authResult.rateLimited ? 'rate' : 'server';
+          s.deadUntil = Date.now() + (COOLDOWNS[kind] || 60_000);
+          s.deadReason = authResult.error;
+        } else if (authResult?.ok) {
+          const s = statsFor(cfg, p.id);
+          s.deadUntil = 0;
+          s.deadReason = null;
+        }
         logEvent(cfg, `Provider "${p.name}" verified & updated`);
         persistSoon(cfg, 0);
         return send(res, 200, providerView(cfg, p));

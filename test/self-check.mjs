@@ -94,4 +94,14 @@ const llm7Probe = await checkAuth({
 });
 assert.strictEqual(llm7Probe.ok, false, 'llm7 with Anthropic protocol and unavailable model must fail probe');
 
+const nvidiaCheck = await checkAuth({
+  id: 'nvidia',
+  baseUrl: 'https://integrate.api.nvidia.com/v1',
+  protocol: 'openai',
+  apiKey: 'nvapi-dummy-key-testing',
+  models: {},
+});
+assert.strictEqual(nvidiaCheck.ok, false, 'Nvidia Build with dummy key must fail auth check');
+assert.ok(nvidiaCheck.error?.includes('Authentication'), `Expected auth failure, got: ${nvidiaCheck.error}`);
+
 console.log('All rotor self-checks passed!');
