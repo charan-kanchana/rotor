@@ -307,8 +307,8 @@
           </div>
         </div>
         <div class="form-group">
-          <label class="form-label" for="form-base-url">Base URL</label>
-          <input type="url" class="form-input" id="form-base-url" placeholder="https://api.example.com" required>
+          <label class="form-label" for="form-base-url" id="form-base-url-label">Base URL</label>
+          <input type="text" class="form-input" id="form-base-url" placeholder="https://api.example.com" required>
         </div>
         <div class="form-row">
           <div class="form-group">
@@ -652,6 +652,8 @@
   function closeModal() {
     modal.classList.remove('open'); document.body.classList.remove('lock');
     providerForm.reset();
+    $('form-base-url-label').textContent = 'Base URL';
+    $('form-base-url').placeholder = 'https://api.example.com';
     $('form-provider-id').value = '';
     $('fetched-models-list').innerHTML = '';
     $('fetch-models-hint').textContent = 'Queries endpoint to list available model IDs';
@@ -666,9 +668,13 @@
   });
 
   function populateForm(p, id, keyPlaceholder, enabled) {
+    const isCf = p.id === 'cloudflare-ai' || p.baseUrl?.includes('cloudflare.com');
+    $('form-base-url-label').textContent = isCf ? 'Account ID' : 'Base URL';
+    $('form-base-url').placeholder = isCf ? 'Enter Cloudflare Account ID' : 'https://api.example.com';
     $('form-provider-id').value = id;
     $('form-name').value = p.name || '';
-    $('form-base-url').value = p.baseUrl || '';
+    const cfAcc = p.baseUrl?.match(/accounts\/([^/]+)/)?.[1];
+    $('form-base-url').value = isCf ? (cfAcc && cfAcc !== '{accountId}' ? cfAcc : '') : (p.baseUrl || '');
     $('form-protocol').value = p.protocol || 'anthropic';
     $('form-auth-style').value = p.authStyle || 'auto';
     $('form-api-key').value = '';

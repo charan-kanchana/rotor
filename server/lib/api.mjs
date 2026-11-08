@@ -145,10 +145,16 @@ function normalizePriorities(cfg) {
   sorted.forEach((p, i) => (p.priority = i + 1));
 }
 
+function resolveBaseUrl(b) {
+  const u = String(b.baseUrl || '').trim();
+  if (b.accountId) return `https://api.cloudflare.com/client/v4/accounts/${String(b.accountId).trim()}/ai/v1`;
+  return (!/^https?:\/\//i.test(u) && u) ? `https://api.cloudflare.com/client/v4/accounts/${u}/ai/v1` : u;
+}
+
 function sanitizeProviderInput(body) {
   const errors = [];
   const name = String(body.name || '').trim();
-  const baseUrl = String(body.baseUrl || '').trim();
+  const baseUrl = resolveBaseUrl(body);
   if (!name) errors.push('name is required');
   if (!/^https?:\/\//.test(baseUrl)) errors.push('baseUrl must start with http:// or https://');
   const models = {};
@@ -232,7 +238,7 @@ export async function handleApi(req, res, pathname, cfg) {
 
     if (method === 'POST' && resource === 'providers' && id === 'fetch-models' && !action) {
       const body = await readJson(req);
-      const baseUrl = String(body.baseUrl || '').trim();
+      const baseUrl = resolveBaseUrl(body);
       let apiKey = String(body.apiKey || '').trim();
       if (!apiKey && body.providerId) {
         const existing = cfg.providers.find((x) => x.id === body.providerId);
